@@ -1,0 +1,3032 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>BEANABOX — каталог (рубрикатор + фильтры)</title>
+  <style>
+    @font-face { font-family: Gilroy; src: url("fonts/Gilroy-Regular.woff") format("woff"); font-weight: 400; font-style: normal; }
+    @font-face { font-family: Gilroy; src: url("fonts/Gilroy-Medium.woff") format("woff"); font-weight: 500; font-style: normal; }
+    @font-face { font-family: Gilroy; src: url("fonts/Gilroy-Semibold.woff") format("woff"); font-weight: 600; font-style: normal; }
+    @font-face { font-family: Gilroy; src: url("fonts/Gilroy-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; }
+    :root {
+      --green: #3dbe4a;
+      --green-d: #248a2c;
+      --blue: #2c52be;
+      --ink: #111318;
+      --mute: #6b7280;
+      --line: #ececec;
+      --bg: #f3f4f6;
+      --tag: linear-gradient(90deg, #e53935, #ff8a00 58%, #ffc107);
+      --phone-w: 390px;
+      --phone-h: 844px;
+      --rail-w: 112px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: Gilroy, "Segoe UI", system-ui, sans-serif;
+      font-weight: 400;
+      background: #1b2430;
+      color: #eef2f6;
+      line-height: 1.45;
+    }
+    .wrap {
+      min-height: 100vh;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 32px;
+      padding: 28px 24px 48px;
+    }
+    .deck {
+      width: min(440px, 100%);
+      flex: none;
+      padding-top: 8px;
+      font-size: 15px;
+      font-weight: 400;
+      max-height: calc(100dvh - 32px);
+      overflow-y: auto;
+    }
+    .deck h1 { font-size: 18px; font-weight: 600; margin: 0 0 12px; color: #fff; }
+    .deck h2 { font-size: 16px; font-weight: 600; margin: 16px 0 8px; color: #fff; }
+    .deck p, .deck li { color: #d5dde6; margin: 0 0 10px; }
+    .deck ul, .deck ol { margin: 0 0 12px; padding-left: 20px; }
+    .deck strong { color: #fff; font-weight: 600; }
+    .deck code {
+      font-size: 12px;
+      background: rgba(255,255,255,.08);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: #c8d4e0;
+    }
+    .deck .pill-note {
+      display: inline-block;
+      background: rgba(61, 190, 74, 0.18);
+      color: #9ee6a6;
+      font-weight: 500;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      max-height: calc(100dvh - 32px);
+      background: var(--bg);
+      border-radius: 28px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.45);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      color: var(--ink);
+    }
+    .phone-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+    .sticky-bar {
+      position: sticky;
+      top: 0;
+      z-index: 6;
+      background: #fff;
+      box-shadow: 0 1px 0 var(--line);
+    }
+    .catalog-row {
+      display: flex;
+      align-items: flex-start;
+      background: var(--bg);
+      min-height: calc(var(--catalog-scroll-h, 680px) - var(--sticky-offset, 108px));
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px 10px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      flex: none;
+    }
+    .logo-sq {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: #2f7a3a;
+      color: #fff;
+      font-size: 9px; font-weight: 600;
+      line-height: 1.05;
+      display: grid; place-items: center;
+      text-align: center;
+      flex: none;
+    }
+    .brand-txt { font-size: 15px; font-weight: 600; color: var(--ink); }
+
+    .hero-pdf {
+      margin: 10px 12px 0;
+      padding: 14px 14px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #1e5c28 0%, #2f7a3a 55%, #248a2c 100%);
+      color: #fff;
+      flex: none;
+    }
+    .hero-pdf p { margin: 0 0 10px; font-size: 13px; font-weight: 400; line-height: 1.4; opacity: .95; }
+    .hero-pdf button {
+      border: 0; background: #fff; color: var(--green-d);
+      font: inherit; font-weight: 600; font-size: 13px;
+      padding: 8px 14px; border-radius: 999px; cursor: pointer;
+    }
+    .transit-banner { display: none !important; }
+    .transit-banner span:last-child { color: var(--green-d); font-weight: 600; white-space: nowrap; }
+
+    .toolbar {
+      padding: 10px 12px 8px;
+      background: #fff;
+      flex: none;
+    }
+    .search-row { display: flex; gap: 8px; align-items: center; }
+    .search {
+      flex: 1; display: flex; align-items: center; gap: 8px;
+      background: var(--bg); border-radius: 12px; padding: 10px 12px;
+      min-height: 44px;
+    }
+    .search input {
+      border: 0; background: transparent; font: inherit; font-size: 15px; font-weight: 400;
+      width: 100%; outline: none; color: var(--ink);
+    }
+    .view-btns { display: flex; gap: 6px; }
+    .view-btns button {
+      width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line);
+      background: #fff; color: var(--mute); cursor: pointer; display: grid; place-items: center;
+    }
+    .view-btns button.on { border-color: var(--green); color: var(--green-d); background: rgba(61,190,74,.08); }
+
+    .chips-wrap {
+      position: relative;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      flex: none;
+      transition: background .4s ease, box-shadow .4s ease;
+    }
+    .chips-wrap.hinting,
+    .chips-wrap.scroll-glow,
+    .chips-wrap.is-scrolling {
+      background: linear-gradient(180deg, #fff 0%, #f4fbf5 52%, #e8f6ea 100%);
+      box-shadow: inset 0 -1px 0 rgba(61, 190, 74, .16);
+    }
+    .chips-row {
+      display: flex; gap: 8px; padding: 10px 36px 14px 12px;
+      overflow-x: auto; overflow-y: hidden; flex: none; background: transparent;
+      scrollbar-width: none;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    .chips-wrap.can-left .chips-row {
+      padding-left: 36px;
+    }
+    .chips-row::-webkit-scrollbar { display: none; }
+    .chips-fade {
+      position: absolute; top: 0; bottom: 3px; width: 36px;
+      pointer-events: none; z-index: 2;
+      opacity: 0; transition: opacity .2s ease;
+    }
+    .chips-fade.left {
+      left: 0;
+      background: linear-gradient(90deg, #fff 18%, rgba(255,255,255,0));
+    }
+    .chips-fade.right {
+      right: 0;
+      background: linear-gradient(270deg, #fff 18%, rgba(255,255,255,0));
+    }
+    .chips-wrap.hinting .chips-fade.left,
+    .chips-wrap.scroll-glow .chips-fade.left,
+    .chips-wrap.is-scrolling .chips-fade.left {
+      background: linear-gradient(90deg, #f4fbf5 18%, rgba(244,251,245,0));
+    }
+    .chips-wrap.hinting .chips-fade.right,
+    .chips-wrap.scroll-glow .chips-fade.right,
+    .chips-wrap.is-scrolling .chips-fade.right {
+      background: linear-gradient(270deg, #eef8f0 18%, rgba(238,248,240,0));
+    }
+    .chips-wrap.can-left .chips-fade.left,
+    .chips-wrap.can-right .chips-fade.right { opacity: 1; }
+    .chips-motion {
+      position: absolute;
+      left: 12px;
+      right: 40px;
+      bottom: 0;
+      height: 3px;
+      border-radius: 3px 3px 0 0;
+      background: rgba(61, 190, 74, .14);
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      transform: scaleY(.6);
+      transform-origin: bottom;
+      transition: opacity .28s ease, transform .28s ease, background .28s ease;
+    }
+    .chips-wrap.can-left .chips-motion {
+      left: 40px;
+    }
+    .chips-wrap.hinting .chips-motion,
+    .chips-wrap.scroll-glow .chips-motion,
+    .chips-wrap.is-scrolling .chips-motion {
+      opacity: 1;
+      transform: scaleY(1);
+      background: rgba(61, 190, 74, .2);
+    }
+    .chips-motion-thumb {
+      height: 100%;
+      width: 34%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #3dbe4a 0%, #6fd67a 48%, #248a2c 100%);
+      box-shadow: 0 0 10px rgba(61, 190, 74, .4);
+      transform: translateX(0);
+      will-change: transform;
+    }
+    .chips-wrap.hinting .chips-motion-thumb {
+      animation: chipsMotionSlide 1.35s ease-in-out 1;
+    }
+    @keyframes chipsMotionSlide {
+      0% { transform: translateX(0); }
+      35% { transform: translateX(185%); }
+      70% { transform: translateX(95%); }
+      100% { transform: translateX(0); }
+    }
+    .chips-more,
+    .chips-back {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      z-index: 3; width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid var(--line); background: #fff;
+      box-shadow: 0 2px 8px rgba(17,19,24,.1);
+      display: none; align-items: center; justify-content: center;
+      padding: 0; cursor: pointer; color: var(--green-d);
+      font: inherit;
+    }
+    .chips-more { right: 6px; }
+    .chips-back { left: 6px; }
+    .chips-wrap.can-right .chips-more { display: grid; }
+    .chips-wrap.can-left .chips-back { display: grid; }
+    .chips-wrap.hinting .chips-more {
+      animation: chipsPulse 1.1s ease-in-out 2;
+    }
+    @keyframes chipsPulse {
+      0%, 100% { transform: translateY(-50%) scale(1); box-shadow: 0 2px 8px rgba(17,19,24,.1); }
+      50% { transform: translateY(-50%) scale(1.08); box-shadow: 0 4px 14px rgba(36,138,44,.28); }
+    }
+    .chips-row.nudge {
+      animation: chipsNudge 1.35s ease-in-out 1;
+    }
+    @keyframes chipsNudge {
+      0% { transform: translateX(0); }
+      35% { transform: translateX(-28px); }
+      70% { transform: translateX(-10px); }
+      100% { transform: translateX(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .chips-row.nudge,
+      .chips-wrap.hinting .chips-more,
+      .chips-wrap.hinting .chips-motion-thumb { animation: none; }
+      .chips-wrap,
+      .chips-motion { transition: none; }
+    }
+    .chip {
+      flex: none; border: 1px solid var(--line); background: #fff;
+      border-radius: 999px; padding: 9px 12px 9px 14px;
+      font: inherit; font-size: 13px; font-weight: 500; color: var(--ink);
+      cursor: pointer; white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 6px;
+      min-height: 40px;
+    }
+    .chip .chip-icon { flex: none; width: 15px; height: 15px; color: var(--mute); }
+    .chip .chip-chevron { flex: none; width: 12px; height: 12px; color: var(--mute); opacity: .88; }
+    .chip.on { border-color: var(--green); color: var(--green-d); background: rgba(61,190,74,.06); }
+    .chip.has-filter { border-color: var(--green); box-shadow: inset 0 0 0 1px var(--green); }
+
+    .sidebar {
+      width: var(--rail-w);
+      flex: none;
+      position: sticky;
+      top: var(--sticky-offset, 108px);
+      align-self: flex-start;
+      max-height: calc(var(--catalog-scroll-h, 680px) - var(--sticky-offset, 108px));
+      overflow-y: auto;
+      border-right: 1px solid var(--line);
+      background: #fff;
+      padding: 6px 0 8px;
+      -webkit-overflow-scrolling: touch;
+      z-index: 2;
+    }
+    .tab-item {
+      display: block; width: 100%; border: 0; background: transparent;
+      text-align: left; padding: 12px 8px 12px 10px;
+      font: inherit; font-size: 13px; font-weight: 500; line-height: 1.3;
+      color: var(--mute); cursor: pointer; position: relative;
+      border-left: 3px solid transparent;
+      min-height: 44px;
+    }
+    .tab-item .cnt { display: block; font-size: 11px; color: #9ca3af; margin-top: 2px; font-weight: 400; }
+    .tab-item.on {
+      background: rgba(61,190,74,.12);
+      color: var(--green-d);
+      font-weight: 600;
+      border-left-color: var(--green);
+    }
+
+    .products-pane {
+      flex: 1;
+      min-width: 0;
+      padding: 8px 8px 12px;
+      overflow-x: hidden;
+    }
+    .pane-title {
+      margin: 0 0 6px;
+      padding: 2px 2px 0;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.25;
+    }
+    .pane-title .cnt {
+      font-weight: 500;
+      color: var(--mute);
+      font-size: 14px;
+      margin-left: 6px;
+    }
+    .pane-blurb {
+      margin: 0 0 12px;
+      padding: 0 2px;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--mute);
+      line-height: 1.4;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+      min-width: 0;
+    }
+    .product-grid.list-view {
+      display: flex;
+      flex-direction: column;
+      grid-template-columns: none;
+      gap: 8px;
+    }
+    .product-grid.list-view > .lrow {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      flex: none;
+    }
+
+    .card {
+      border: 0; background: #fff; border-radius: 14px; padding: 0;
+      text-align: left; cursor: pointer; font: inherit; color: inherit;
+      box-shadow: 0 4px 14px rgba(17,19,24,.06);
+      overflow: hidden; width: 100%;
+    }
+    .pic {
+      position: relative; aspect-ratio: 1; background: #e5e9ec;
+      overflow: hidden;
+    }
+    .pic-track {
+      display: flex;
+      height: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .pic-track::-webkit-scrollbar { display: none; }
+    .pic-slide {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      position: relative;
+      background: #e5e9ec;
+    }
+    .pic-slide img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      pointer-events: none;
+    }
+    .pic-slide .ph {
+      width: 100%; height: 100%;
+      background: linear-gradient(145deg,#dfe8e0,#c8d4cb);
+    }
+    .tag-transit {
+      display: inline-block;
+      font-size: 11px; font-weight: 600; color: #fff;
+      padding: 4px 8px; border-radius: 999px;
+      background: var(--tag);
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+    .tag-promo {
+      display: inline-block;
+      font-size: 11px; font-weight: 600; color: #fff;
+      padding: 4px 8px; border-radius: 999px;
+      background: linear-gradient(90deg, #2c52be, #3dbe4a);
+      line-height: 1.2;
+    }
+    .lrow .meta .tag-promo { flex: none; }
+    .eta-line {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--mute);
+      line-height: 1.35;
+      margin-top: 2px;
+    }
+    .eta-line b { color: var(--ink); font-weight: 600; }
+    .pic-badges {
+      position: absolute; left: 8px; top: 8px; right: 48px;
+      display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .pic-badges .pills {
+      position: static;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      gap: 4px;
+      max-width: 100%;
+      width: 100%;
+    }
+    .pill {
+      font-size: 11px; font-weight: 500;
+      background: rgba(255,255,255,.92); color: var(--ink);
+      padding: 4px 8px; border-radius: 8px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      max-width: 100%;
+    }
+    .pill-q { flex: none; max-width: none; }
+    .pill-process {
+      min-width: 0;
+      max-width: 100%;
+      display: block;
+    }
+    .pic-fav {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 0; padding: 0; cursor: pointer;
+      background: rgba(255,255,255,.92);
+      color: #c4c8ce;
+      font-size: 18px; line-height: 1;
+      display: grid; place-items: center;
+      box-shadow: 0 2px 8px rgba(17,19,24,.12);
+      flex: none;
+    }
+    .pic .pic-fav {
+      position: absolute; top: 6px; right: 6px; z-index: 3;
+      pointer-events: auto;
+    }
+    .pic-fav.on { color: #f5c518; background: #fff; }
+    .pic-dots {
+      position: absolute; left: 0; right: 0; bottom: 8px;
+      display: flex; justify-content: center; align-items: center; gap: 5px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .pic-dot {
+      width: 6px; height: 6px; border-radius: 999px;
+      background: rgba(255,255,255,.45);
+      box-shadow: 0 1px 2px rgba(0,0,0,.25);
+      transition: width .15s ease, background .15s ease;
+    }
+    .pic-dot.on {
+      width: 14px;
+      background: #fff;
+    }
+    .card-body { padding: 8px 8px 10px; }
+    .card-title {
+      font-size: 14px; font-weight: 600; line-height: 1.35;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      min-height: auto;
+      margin-bottom: 0;
+    }
+    .card-foot {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 6px; gap: 6px;
+    }
+    .card .card-foot { margin-top: 6px; }
+    .price-row {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .price {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green-d);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Корзина: пусто = outline + плюс; в корзине = степпер */
+    .cart-add {
+      flex: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1.5px solid var(--green);
+      background: #fff;
+      color: var(--green-d);
+      padding: 0;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+    .cart-add svg { width: 20px; height: 20px; display: block; }
+    .cart-add:active { background: rgba(61,190,74,.1); }
+    .cart-qty {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      height: 34px;
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(36,138,44,.22);
+    }
+    .cart-qty button {
+      width: 32px; height: 34px;
+      border: 0; background: transparent; color: #fff;
+      font: inherit; font-size: 18px; font-weight: 700;
+      cursor: pointer; line-height: 1; padding: 0;
+    }
+    .cart-qty button:active { background: rgba(0,0,0,.08); }
+    .cart-qty .cart-qty-n {
+      min-width: 22px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 0 2px;
+    }
+
+    .dock {
+      flex: none;
+      flex-shrink: 0;
+      margin-top: auto;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      background: #fff;
+      border-top: 1px solid var(--line);
+      padding: 8px 2px max(12px, env(safe-area-inset-bottom));
+      z-index: 20;
+      position: sticky;
+      bottom: 0;
+      min-height: 56px;
+    }
+    .dock button {
+      border: 0; background: none; font: inherit;
+      font-size: 11px; font-weight: 500; color: #9ca3af; cursor: pointer;
+      padding: 8px 2px;
+      min-height: 48px;
+      line-height: 1.2;
+      position: relative;
+    }
+    .dock button.on { color: var(--green-d); font-weight: 600; }
+    .dock-badge {
+      position: absolute;
+      top: 4px; right: calc(50% - 22px);
+      min-width: 16px; height: 16px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: #ef4444;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 16px;
+      text-align: center;
+      display: none;
+    }
+    .dock-badge.on { display: inline-block; }
+
+    .toast {
+      position: absolute; left: 16px; right: 16px; bottom: 72px;
+      z-index: 60; background: rgba(17,19,24,.92); color: #fff;
+      border-radius: 12px; padding: 12px 14px; font-size: 13px; font-weight: 500;
+      text-align: center; opacity: 0; pointer-events: none;
+      transform: translateY(8px); transition: opacity .2s ease, transform .2s ease;
+    }
+    .toast.on { opacity: 1; transform: translateY(0); }
+
+    .cart-sheet-body {
+      flex: 1; min-height: 0; overflow-y: auto; padding: 12px;
+      background: var(--bg);
+    }
+    .cart-empty {
+      text-align: center; color: var(--mute); padding: 48px 16px; font-size: 14px;
+    }
+    .cart-card {
+      background: #fff; border-radius: 14px; padding: 12px;
+      margin-bottom: 8px;
+      box-shadow: 0 4px 14px rgba(17,19,24,.06);
+    }
+    .cart-card .n { font-size: 14px; font-weight: 600; margin: 0 0 4px; color: var(--ink); }
+    .cart-card .meta { font-size: 12px; color: var(--mute); margin-bottom: 8px; }
+    .cart-card .row {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .cart-card .sum { font-size: 14px; font-weight: 700; color: var(--green-d); }
+    .cart-sheet-foot {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 12px 14px max(14px, env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line); background: #fff;
+    }
+    .cart-sheet-foot .tot { font-size: 13px; color: var(--mute); }
+    .cart-sheet-foot .tot b { display: block; font-size: 18px; color: var(--ink); margin-top: 2px; }
+    .cart-sheet-foot .cta {
+      border: 0; background: var(--green); color: #fff;
+      font: inherit; font-weight: 600; font-size: 14px;
+      border-radius: 12px; padding: 12px 18px; min-height: 48px; cursor: pointer;
+    }
+
+    /* Buy sheet — как в beanabox-lot-v-puti */
+    .buy-sheet {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 55;
+    }
+    .buy-sheet.open { display: block; }
+    .buy-dim {
+      position: absolute; inset: 0;
+      background: rgba(20,24,30,.45);
+    }
+    .buy-card {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      background: #fff; color: var(--ink);
+      border-radius: 18px 18px 0 0;
+      padding: 16px 16px max(22px, env(safe-area-inset-bottom));
+      box-shadow: 0 -12px 40px rgba(0,0,0,.18);
+      max-height: min(92%, 560px);
+      overflow-y: auto;
+    }
+    .buy-head {
+      display: flex; justify-content: space-between; gap: 12px; align-items: flex-start;
+    }
+    .buy-head b { font-size: 16px; font-weight: 700; line-height: 1.3; }
+    .buy-x {
+      border: 0; background: #f3f3f3; width: 28px; height: 28px; border-radius: 50%;
+      font-size: 16px; cursor: pointer; flex: none; color: var(--ink);
+    }
+    .buy-info {
+      background: #ececec; border-radius: 12px; padding: 12px; margin: 12px 0;
+      font-size: 13px; font-weight: 700; line-height: 1.4;
+    }
+    .buy-info .avail-line { font-weight: 600; margin-top: 4px; }
+    .buy-label { font-weight: 700; font-size: 14px; margin: 4px 0 6px; }
+    .buy-qty-box {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      border: 1.5px solid #e4e4e4; border-radius: 12px; padding: 10px 12px; margin: 0 0 10px;
+    }
+    .buy-qty-box input {
+      border: 0; outline: none; width: 88px; min-width: 0;
+      font: inherit; font-size: 22px; font-weight: 700; color: var(--green-d);
+      background: transparent;
+    }
+    .buy-qty-box .sum {
+      color: var(--green-d); font-weight: 700; font-size: 13px; text-align: right;
+    }
+    .buy-chips { display: flex; gap: 8px; margin: 0 0 14px; }
+    .buy-chips button {
+      flex: 1; border: 0; background: #e7f5e8; color: var(--green-d);
+      border-radius: 999px; padding: 9px 0; font-weight: 700; font-size: 13px; cursor: pointer;
+    }
+    .buy-cta {
+      width: 100%; border: 0; background: var(--green); color: #fff;
+      font: inherit; font-weight: 700; font-size: 15px;
+      border-radius: 14px; padding: 14px; min-height: 48px; cursor: pointer;
+    }
+
+    .lrow {
+      display: flex; flex-direction: column; gap: 6px; background: #fff; border-radius: 14px; padding: 10px 12px;
+      box-shadow: 0 4px 14px rgba(17,19,24,.06);
+      width: 100%; max-width: 100%; min-width: 0;
+      border: 0; text-align: left; font: inherit; cursor: pointer; color: inherit;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .lrow .card-title {
+      min-height: auto; font-size: 15px;
+      overflow-wrap: anywhere; word-break: break-word;
+    }
+    .lrow .meta {
+      display: flex; flex-wrap: nowrap; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--mute); font-weight: 400; margin-top: 0;
+      line-height: 1.35;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+    }
+    .lrow .meta .tag-transit {
+      position: static;
+      display: inline-block;
+      flex: none;
+      margin: 0;
+      vertical-align: middle;
+      padding: 4px 8px;
+    }
+    .lrow .eta-line {
+      font-size: 13px; margin-top: 0;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .lrow .meta .meta-q { flex: none; white-space: nowrap; }
+    .lrow .meta .meta-sep { flex: none; opacity: .7; }
+    .lrow .meta .meta-process {
+      min-width: 0;
+      flex: 1 1 auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .lrow .card-foot {
+      margin-top: 2px;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+    }
+    .lrow .price-row {
+      flex: 1;
+      min-width: 0;
+    }
+    .lrow .pic-fav {
+      width: 40px; height: 40px;
+      background: #fff;
+      border: 1px solid var(--line);
+      flex: none;
+    }
+
+    .empty {
+      text-align: center; padding: 32px 16px; color: var(--mute);
+      font-size: 14px; font-weight: 500; display: none;
+    }
+    .empty.visible { display: block; }
+
+    .overlay {
+      position: absolute; inset: 0; background: rgba(17,19,24,.45);
+      z-index: 40; display: none;
+    }
+    .overlay.open { display: block; }
+    .sheet {
+      position: absolute; left: 0; right: 0; bottom: 0; top: 0;
+      background: #fff; z-index: 50;
+      display: none; flex-direction: column;
+      color: var(--ink);
+    }
+    .sheet.open { display: flex; }
+    .sheet-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; border-bottom: 1px solid var(--line);
+      font-weight: 600; font-size: 16px;
+    }
+    .sheet-head button {
+      border: 0; background: transparent; font: inherit; font-size: 14px; font-weight: 500;
+      color: var(--mute); cursor: pointer;
+    }
+    .filter-body { flex: 1; min-height: 0; display: flex; overflow: hidden; }
+    .filter-groups {
+      width: 112px; flex: none; border-right: 1px solid var(--line);
+      overflow-y: auto; background: var(--bg);
+    }
+    .filter-groups button {
+      display: block; width: 100%; text-align: left; border: 0; background: transparent;
+      padding: 14px 10px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+      color: var(--mute); border-left: 3px solid transparent; line-height: 1.3;
+      min-height: 48px;
+    }
+    .filter-groups button.on {
+      background: #fff; color: var(--ink); font-weight: 600;
+      border-left-color: var(--green);
+    }
+    .filter-options {
+      flex: 1; min-width: 0; overflow-y: auto; padding: 12px;
+    }
+    .filter-section { margin-bottom: 20px; }
+    .filter-section h3 { font-size: 15px; font-weight: 600; margin: 0 0 10px; color: var(--ink); }
+    .filter-section .opts-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .opt {
+      border: 1px solid var(--line); background: #fff; border-radius: 999px;
+      padding: 10px 14px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer;
+      min-height: 40px;
+    }
+    .opt.on { border-color: var(--green); background: rgba(61,190,74,.1); color: var(--green-d); }
+    .sheet-foot {
+      display: flex; gap: 10px; padding: 12px 14px max(14px, env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+    }
+    .sheet-foot button {
+      flex: 1; border-radius: 12px; padding: 14px; font: inherit; font-size: 15px; cursor: pointer;
+      min-height: 48px;
+    }
+    .btn-reset { border: 1px solid var(--line); background: #fff; font-weight: 500; color: var(--ink); }
+    .btn-apply { border: 0; background: var(--green); color: #fff; font-weight: 600; }
+
+    .sort-sheet .sort-list { padding: 8px 0; overflow-y: auto; flex: 1; }
+    .sort-sheet button {
+      display: block; width: 100%; text-align: left; border: 0; background: #fff;
+      padding: 16px 18px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer;
+      border-bottom: 1px solid var(--line);
+      min-height: 52px;
+    }
+    .sort-sheet button.on { color: var(--green-d); font-weight: 600; }
+
+    .drop-menu {
+      position: absolute; z-index: 35;
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 12px 32px rgba(0,0,0,.18);
+      min-width: 160px; padding: 6px 0; display: none;
+      border: 1px solid var(--line);
+    }
+    .drop-menu.open { display: block; }
+    .drop-menu button {
+      display: block; width: 100%; text-align: left; border: 0; background: #fff;
+      padding: 12px 16px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer;
+      min-height: 44px;
+    }
+    .drop-menu button:hover { background: var(--bg); }
+
+    @media (max-width: 820px) {
+      .wrap { padding: 0; gap: 0; }
+      .deck { display: none !important; }
+      .phone {
+        width: 100%; height: 100dvh; max-height: 100dvh;
+        border-radius: 0; box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <aside class="deck">
+      <span class="pill-note">Прототип · отличие от текущего приложения</span>
+      <h1>Чем прототип отличается от текущего приложения</h1>
+      <p>Справа — предложение нового каталога. Цель изменений — <strong>рост самостоятельного оформления лотов Закупщиками</strong> на сайте. Сейчас из 10 заказов только 1–2 делают сами закупщики, остальное оформляют менеджеры. В Мини-приложении метрики не настроены: нельзя увидеть, чего клиент не понимает и где отваливается. Ниже — что добавили относительно текущего приложения и как это должно помочь самостоятельной навигации и оформлению заказа.</p>
+
+      <h2>1. Вертикальные разделы прайса</h2>
+      <ul>
+        <li><strong>Что сделали:</strong> слева постоянный рубрикатор сегментов (В пути, Акционные, 90+, High Tone, Экзотика, FineComm, Best Value, Decaf, Оборудование, Все). По умолчанию открыт первый раздел — <strong>В пути</strong>.</li>
+        <li><strong>В текущем приложении:</strong> коммерческая нарезка прайса не вынесена отдельной вертикальной колонкой; закупщику сложнее быстро переключать «режим закупа» без помощи менеджера.</li>
+        <li><strong>Зачем / исследование:</strong> при больших каталогах люди сначала выбирают «зону поиска», а потом уточняют. Baymard (Product Lists &amp; Filtering): слабая навигация по спискам даёт abandonment 67–90%, при чуть более ясном tooling — 17–33%.</li>
+        <li><strong>Ожидаемый эффект для self-serve:</strong> закупщик сам находит нужный сегмент без звонка менеджеру; меньше «не знаю, куда смотреть».</li>
+        <li><strong>Проверка:</strong> открыть прототип — активна «В пути»; за 2–3 тапа дойти до «Акционные» и «Все».</li>
+      </ul>
+
+      <h2>2. Описание у каждого раздела</h2>
+      <ul>
+        <li><strong>Что сделали:</strong> под заголовком раздела — короткое пояснение, какие лоты здесь найдёт закупщик.</li>
+        <li><strong>В текущем приложении:</strong> название раздела без расшифровки коммерческого смысла.</li>
+        <li><strong>Зачем:</strong> снижает ошибку «не тот сегмент» и повышает уверенность выбора без подсказки менеджера.</li>
+        <li><strong>Ожидаемый эффект для self-serve:</strong> меньше откатов «не понял раздел» и повторных обращений к менеджеру за разъяснением.</li>
+        <li><strong>Проверка:</strong> в каждом разделе текст описания виден <em>до</em> сетки лотов.</li>
+      </ul>
+
+      <h2>3. Фильтры и сортировка в горизонтальном скролле</h2>
+      <ul>
+        <li><strong>Что сделали:</strong> все ключевые уточнения вынесли в чипы сверху (Фильтры, Сортировка, Сорт, Страна, Обработка, Q Grade) с горизонтальным скроллом.</li>
+        <li><strong>В текущем приложении:</strong> фильтры менее заметны / глубже в интерфейсе, до них чаще не доходят — закупщик уходит в чат/звонок вместо самостоятельного отбора.</li>
+        <li><strong>Зачем / исследование:</strong> Baymard — фильтры критичны для product finding; на mobile price-фильтр использовали ~80% участников тестов. Case Elkjøp (FactFinder): пользователи фасетов конвертировали на ~10% лучше; после выноса популярных фасетов выше — +78% usage фасетов, +5.67% conversion, −4.19% bounce. ConversionTeam (medical B2B/D2C каталог): перестановка фасетов по usage → +14.5% conversion, +10% RPU.</li>
+        <li><strong>Ожидаемый эффект для self-serve:</strong> закупщик сам сужает прайс (страна, обработка, Q, цена) и доходит до лота без менеджера.</li>
+        <li><strong>Проверка:</strong> открыть «Страна» / «Обработка», применить фильтр — счётчик «N из M» в заголовке обновляется; сортировка по цене меняет порядок.</li>
+      </ul>
+
+      <h2>4. Sticky: поиск, фильтры и разделы</h2>
+      <ul>
+        <li><strong>Что сделали:</strong> при скролле каталога поиск, строка фильтров и вертикальный рубрикатор остаются на экране (sticky).</li>
+        <li><strong>В текущем приложении:</strong> при длинном листинге инструменты уточнения уезжают — приходится возвращаться наверх или бросать самостоятельный отбор.</li>
+        <li><strong>Зачем / исследование:</strong> Baymard рекомендует на mobile держать Filter/Sort доступными при скролле. Etsy (pilters): sticky-фильтры после применения дали +5% engagement и +0.6% conversion. DeoDap (CrowAI): sticky Sort &amp; Filter → +40.75% conversion, +24.55% filter interactions.</li>
+        <li><strong>Ожидаемый эффект для self-serve:</strong> можно уточнять заказ mid-scroll, не теряя контекст — выше шанс довести оформление самому.</li>
+        <li><strong>Проверка:</strong> проскроллить далеко вниз — чипы и левое меню на месте, док внизу.</li>
+      </ul>
+
+      <h2>5. Намёк на фильтры при первом скролле</h2>
+      <ul>
+        <li><strong>Что сделали:</strong> при первом скролле вниз строка фильтров слегка «подёргивается» / сдвигается вбок — привлекает внимание к горизонтальным чипам.</li>
+        <li><strong>Зачем:</strong> discovery affordance: пользователь часто не замечает, что фильтры листаются вбок. Без этого закупщик скроллит «вслепую» и чаще уходит к менеджеру.</li>
+        <li><strong>Ожидаемый эффект для self-serve:</strong> раньше обнаруживают фильтры → раньше самостоятельный отбор лотов.</li>
+        <li><strong>Проверка:</strong> обновить страницу → первый скролл каталога — виден короткий nudge строки фильтров (без бесконечной анимации).</li>
+      </ul>
+
+      <h2>6. Иконка корзины вместо «плюса»</h2>
+      <ul>
+        <li><strong>Что сделали:</strong> на карточке — иконка корзины с плюсом; пусто / в корзине читаются по-разному; добавление через окно количества (кг шагом мешка), как в сценарии закупа.</li>
+        <li><strong>В текущем приложении / старых макетах:</strong> часто «+», который путают с увеличением счётчика или «ещё чем-то» — шаг к заказу неочевиден.</li>
+        <li><strong>Зачем:</strong> ясный affordance «положить в заказ» снижает мисклик и ускоряет путь к самостоятельному оформлению.</li>
+        <li><strong>Ожидаемый эффект для self-serve:</strong> ↑ доля заказов, собранных закупщиком без менеджера; ясный шаг «мешок → заказ».</li>
+        <li><strong>Проверка:</strong> тап по корзине → окно «Доступно…» и +60/+120… → «Добавить в заказ» → бейдж на доке.</li>
+      </ul>
+
+      <h2>7. Список без превью фото</h2>
+      <ul>
+        <li><strong>Что сделали:</strong> во внешнем виде «Список» убрали превью изображения; в кадре больше строк лотов (название, Q, обработка, цена).</li>
+        <li><strong>В текущем приложении:</strong> картинка в списке съедает вертикаль — закупщик больше скроллит прайс и быстрее устаёт от самостоятельного поиска.</li>
+        <li><strong>Зачем:</strong> для B2B-сканирования прайса фото вторично; плотность списка снижает трение до выбора лота.</li>
+        <li><strong>Ожидаемый эффект для self-serve:</strong> быстрее сравнить позиции и положить в заказ без помощи менеджера.</li>
+        <li><strong>Проверка:</strong> переключить список на «Все» — в видимой области заметно больше позиций, чем в плитке; вёрстка не разъезжается.</li>
+      </ul>
+
+      <h2>Главная цель и как будем измерять</h2>
+      <p><strong>Сейчас:</strong> из 10 заказов только 1–2 оформляют сами Закупщики; 8–9 — менеджеры. <strong>Ждём:</strong> рост доли самостоятельных заказов и самостоятельной навигации по каталогу.</p>
+      <p><strong>Ограничение:</strong> в Мини-приложении аналитика не настроена — нельзя увидеть funnel, точки непонимания и отвал. Пока опираемся на операционную долю self-serve заказов (менеджер vs закупщик) и качественные сценарии ниже; после внедрения метрик в мини-приложении — дополним по шагам каталог→корзина→заказ.</p>
+      <ol>
+        <li><strong>Ключевой KPI:</strong> ↑ доля заказов, оформленных Закупщиком самостоятельно (цель — заметно выше текущих 1–2 из 10).</li>
+        <li><strong>Поведение в каталоге (когда появятся метрики):</strong> переключения разделов, filter/sort usage, путь до add-to-cart без ухода в чат/менеджеру.</li>
+        <li><strong>Качество UX:</strong> меньше «не нашёл / не понял» → меньше эскалаций на менеджера на этапе подбора лота.</li>
+      </ol>
+      <p>Ориентиры по паттернам каталога: Baymard Institute; Elkjøp / FactFinder; ConversionTeam; Etsy sticky filters; DeoDap. Для BEANABOX успех — не абстрактный CR, а рост self-serve оформления закупщиками при настроенной аналитике мини-приложения.</p>
+    </aside>
+
+    <div class="phone" id="phone">
+      <div class="phone-scroll" id="phoneScroll">
+        <header class="brand">
+          <div class="logo-sq">bean<br>abox</div>
+          <span class="brand-txt">Зелёные зёрна всего мира</span>
+        </header>
+        <section class="hero-pdf" aria-label="Прайс PDF">
+          <p>Актуальный складской прайс BEANABOX — сегменты, Q и цены в USD/кг.</p>
+          <button type="button" id="btnPdf">Скачать прайс в PDF</button>
+        </section>
+        <div class="sticky-bar" id="stickyBar">
+          <div class="toolbar">
+            <div class="search-row">
+              <label class="search">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="#9aa0a6" stroke-width="1.6"/><path d="M11 11l3 3" stroke="#9aa0a6" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <input type="search" id="searchInput" placeholder="Найти зерна" autocomplete="off">
+              </label>
+              <div class="view-btns">
+                <button type="button" id="btnList" aria-label="Список"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg></button>
+                <button type="button" class="on" id="btnGrid" aria-label="Сетка"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.6"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <div class="chips-wrap" id="chipsWrap">
+            <div class="chips-fade left" aria-hidden="true"></div>
+            <button type="button" class="chips-back" id="chipsBack" aria-label="Листать фильтры влево" title="Назад">
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M8 2.5L4.5 6 8 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="chips-row" id="chipsRow" tabindex="0" aria-label="Быстрые фильтры, можно листать вбок">
+              <button type="button" class="chip" data-chip="filters"><svg class="chip-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 3.5h11L9 10v3.5l-2 1V10L2.5 3.5z" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/></svg>Фильтры<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button type="button" class="chip" data-chip="sort"><svg class="chip-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v11M5.5 5.5L8 3l2.5 2.5M5.5 10.5L8 13l2.5-2.5" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg>Сортировка<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button type="button" class="chip" data-chip="species">Сорт<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button type="button" class="chip" data-chip="country">Страна<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button type="button" class="chip" data-chip="process">Обработка<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button type="button" class="chip" data-chip="qgrade">Q Grade<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <div class="chips-motion" id="chipsMotion" aria-hidden="true">
+              <div class="chips-motion-thumb" id="chipsMotionThumb"></div>
+            </div>
+            <div class="chips-fade right" aria-hidden="true"></div>
+            <button type="button" class="chips-more" id="chipsMore" aria-label="Ещё фильтры — листать вправо" title="Ещё фильтры">
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2.5L7.5 6 4 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="catalog-row" id="catalogRow">
+          <nav class="sidebar" id="sidebar" aria-label="Сегменты прайса"></nav>
+          <div class="products-pane" id="productsPane">
+            <h2 class="pane-title" id="paneTitle"></h2>
+            <p class="pane-blurb" id="paneBlurb"></p>
+            <div class="product-grid" id="productGrid"></div>
+            <div class="empty" id="emptyState">Ничего не найдено</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="dock" aria-label="Нижнее меню">
+        <button type="button" class="on" data-dock="catalog">Каталог</button>
+        <button type="button" data-dock="favorites">Избранное</button>
+        <button type="button" data-dock="cart">Корзина<span class="dock-badge" id="dockCartBadge">0</span></button>
+        <button type="button" data-dock="support">Поддержка</button>
+        <button type="button" data-dock="profile">Профиль</button>
+      </nav>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+      <div class="overlay" id="overlay"></div>
+      <div class="sheet" id="filterSheet" aria-hidden="true">
+        <div class="sheet-head">
+          <span>Фильтры</span>
+          <button type="button" id="closeFilter">Закрыть</button>
+        </div>
+        <div class="filter-body">
+          <div class="filter-groups" id="filterGroups"></div>
+          <div class="filter-options" id="filterOptions"></div>
+        </div>
+        <div class="sheet-foot">
+          <button type="button" class="btn-reset" id="resetFilters">Сбросить</button>
+          <button type="button" class="btn-apply" id="applyFilters">Показать 0 лотов</button>
+        </div>
+      </div>
+      <div class="sheet sort-sheet" id="sortSheet" aria-hidden="true">
+        <div class="sheet-head">
+          <span>Сортировка</span>
+          <button type="button" id="closeSort">Закрыть</button>
+        </div>
+        <div class="sort-list" id="sortList"></div>
+      </div>
+      <div class="sheet" id="cartSheet" aria-hidden="true">
+        <div class="sheet-head">
+          <span>Корзина</span>
+          <button type="button" id="closeCart">Закрыть</button>
+        </div>
+        <div class="cart-sheet-body" id="cartSheetBody"></div>
+        <div class="cart-sheet-foot" id="cartSheetFoot" hidden>
+          <div class="tot">Итого <b id="cartTotalUsd">$ 0</b></div>
+          <button type="button" class="cta" id="cartCheckout">К оформлению</button>
+        </div>
+      </div>
+      <div class="buy-sheet" id="buySheet" aria-hidden="true">
+        <div class="buy-dim" id="buyDim"></div>
+        <div class="buy-card" id="buyCard"></div>
+      </div>
+      <div class="drop-menu" id="dropMenu"></div>
+    </div>
+  </div>
+
+  <script>
+    const EMBEDDED_OFFERS = [
+  {
+    "id": "151",
+    "name": "Arabica Brazil Arara Grainpro",
+    "vendor": "Бразилия",
+    "price_rub": 1265.95,
+    "usd": 13.3,
+    "picture": "https://panel.app.beanabox.ru/uploads/Arabica_Brazil_Arara_grainpro_02_ad97894514.jpg",
+    "q_grade": "83.5",
+    "process": null,
+    "categoryId": 1,
+    "remainder": 47,
+    "bouquet": "желтые фрукты, какао, жаренный орех, отдаленно цветы"
+  },
+  {
+    "id": "156",
+    "name": "Arabica Colombia Castillo Diofanor Ruiz Natural grainpro INFUSE",
+    "vendor": "Колумбия",
+    "price_rub": 1941.13,
+    "usd": 20.39,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_17_23_16_23_43477cec5d.jpg",
+    "q_grade": "86.25",
+    "process": "INFUSE, Натуральная",
+    "categoryId": 1,
+    "remainder": 110,
+    "bouquet": "лесные ягоды, мармелад, апельсин, цветы"
+  },
+  {
+    "id": "159",
+    "name": "Arabica Ethiopia gr 1 Yirgacheffe Chelelektu grainpro washed",
+    "vendor": "Эфиопия",
+    "price_rub": 1687.94,
+    "usd": 17.73,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_17_23_33_50_b8aefa1eb3.jpg",
+    "q_grade": null,
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 360,
+    "bouquet": "акация, абрикос, специи, персик, сухофрукты"
+  },
+  {
+    "id": "50",
+    "name": "Robusta Uganda DHP 18 scr",
+    "vendor": "Уганда",
+    "price_rub": 700.49,
+    "usd": 7.36,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_11_21_09_48_03_23fd691e22.jpg",
+    "q_grade": null,
+    "process": "Натуральная",
+    "categoryId": 2,
+    "remainder": 2000,
+    "bouquet": "молочный шоколад, сухофрукты, нуга, карамель, шоколад"
+  },
+  {
+    "id": "52",
+    "name": "Robusta India Cherry A A",
+    "vendor": "Индия",
+    "price_rub": 582.34,
+    "usd": 6.12,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_11_26_13_00_18_ff9d184f24.jpg",
+    "q_grade": null,
+    "process": "Натуральная",
+    "categoryId": 2,
+    "remainder": 599,
+    "bouquet": "темный шоколад, табак, специи"
+  },
+  {
+    "id": "53",
+    "name": "Arabica Brazil Cerrado Moka NY 2 FC",
+    "vendor": "Бразилия",
+    "price_rub": 1054.96,
+    "usd": 11.08,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_11_26_13_19_48_b42b48ddb8.jpg",
+    "q_grade": "83",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 2000,
+    "bouquet": "желтые фрукты, карамель, жареный фундук, какао"
+  },
+  {
+    "id": "56",
+    "name": "Arabica Brazil Santos NY2 17/18 FC",
+    "vendor": "Бразилия",
+    "price_rub": 894.61,
+    "usd": 9.4,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_10_13_48_05_326f56b23b.jpg",
+    "q_grade": "82",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 21955,
+    "bouquet": "орех, карамель, молочный шоколад"
+  },
+  {
+    "id": "57",
+    "name": "Arabica Brazil Santos NY2/3 scr 14/16 FC",
+    "vendor": "Бразилия",
+    "price_rub": 835.53,
+    "usd": 8.78,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_10_16_42_01_a587f4339c.jpg",
+    "q_grade": "81.75",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 4630,
+    "bouquet": "карамель, какао, жаренные орехи"
+  },
+  {
+    "id": "59",
+    "name": "Arabica Colombia Supremo Huila Pitalito",
+    "vendor": "Колумбия",
+    "price_rub": 1038.08,
+    "usd": 10.9,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_10_18_01_42_0eb90bad90.jpg",
+    "q_grade": "82.75",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 3331,
+    "bouquet": "желтые фрукты, карамель, чуть красные ягоды, орех"
+  },
+  {
+    "id": "62",
+    "name": "Arabica Ethiopia Sidamo gr4 Natural grainpro",
+    "vendor": "Эфиопия",
+    "price_rub": 886.17,
+    "usd": 9.31,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_10_19_08_43_33c41e1d22.jpg",
+    "q_grade": "83",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 19130,
+    "bouquet": "лесные ягоды, черный чай, апельсин"
+  },
+  {
+    "id": "63",
+    "name": "Arabica Guatemala Decaf",
+    "vendor": "Гватемала",
+    "price_rub": 1409.43,
+    "usd": 14.8,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_11_09_47_06_57b677fb60.jpg",
+    "q_grade": "83.75",
+    "process": "Sugar cane",
+    "categoryId": 1,
+    "remainder": 299,
+    "bouquet": "чернослив, карамель, сухофрукты"
+  },
+  {
+    "id": "64",
+    "name": "Arabica Guatemala SHB",
+    "vendor": "Гватемала",
+    "price_rub": 1139.36,
+    "usd": 11.97,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_11_10_09_36_b76ab897b4.jpg",
+    "q_grade": "83.25",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 138,
+    "bouquet": "жженый сахар, молочный шоколад, сухофрукты, орех"
+  },
+  {
+    "id": "70",
+    "name": "Arabica Nicaragua Jinotega washed SHG",
+    "vendor": "Никарагуа",
+    "price_rub": 1097.16,
+    "usd": 11.52,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_11_14_00_44_fc5c1929bf.jpg",
+    "q_grade": "83",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 485,
+    "bouquet": "сухофрукты, красные ягоды, карамель, чай"
+  },
+  {
+    "id": "71",
+    "name": "Arabica Peru gr 1 HB",
+    "vendor": "Перу",
+    "price_rub": 1054.96,
+    "usd": 11.08,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_11_14_12_21_f4dd002ca1.jpg",
+    "q_grade": "82.25",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 8,
+    "bouquet": "красные ягоды, карамель, сухофрукты"
+  },
+  {
+    "id": "72",
+    "name": "Arabica El Salvador SHG",
+    "vendor": "Сальвадор",
+    "price_rub": 1181.56,
+    "usd": 12.41,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_11_14_17_37_b37e05d939.jpg",
+    "q_grade": "82.5",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 60,
+    "bouquet": "какао, жареный орех, желтые фрукты"
+  },
+  {
+    "id": "73",
+    "name": "Arabica Uganda Drugar",
+    "vendor": "Уганда",
+    "price_rub": 886.17,
+    "usd": 9.31,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_11_14_24_56_ac7e275d92.jpg",
+    "q_grade": "82.25",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 15950,
+    "bouquet": "жареный орех, черный чай, сухофрукты, желтые фрукты"
+  },
+  {
+    "id": "75",
+    "name": "Arabica Yemen Horaz anaerobic",
+    "vendor": "Йемен",
+    "price_rub": 5485.8,
+    "usd": 57.62,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_11_14_45_54_1fdcbddc83.jpg",
+    "q_grade": "87.5",
+    "process": "Анаэробная (ферментация)",
+    "categoryId": 1,
+    "remainder": 59,
+    "bouquet": "ликер, вишня, апельсин, тропические фрукты"
+  },
+  {
+    "id": "76",
+    "name": "Arabica Yemen Haima anaerobic",
+    "vendor": "Йемен",
+    "price_rub": 5485.8,
+    "usd": 57.62,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_11_14_51_15_9af196dc67.jpg",
+    "q_grade": "87",
+    "process": "Анаэробная (ферментация)",
+    "categoryId": 1,
+    "remainder": 45,
+    "bouquet": "малина, молочный шоколад, ликер, миндаль"
+  },
+  {
+    "id": "77",
+    "name": "Robusta Canephora Uganda scr 15",
+    "vendor": "Уганда",
+    "price_rub": 607.66,
+    "usd": 6.38,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_11_15_00_00_cbeef7367b.jpg",
+    "q_grade": null,
+    "process": "Натуральная",
+    "categoryId": 2,
+    "remainder": 11940,
+    "bouquet": "карамель"
+  },
+  {
+    "id": "79",
+    "name": "Arabica Brazil Alta Mogiana Cheboko NY 2 scr 17/18 fancy",
+    "vendor": "Бразилия",
+    "price_rub": 970.56,
+    "usd": 10.19,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_12_01_35_32_ba0bb42782.jpg",
+    "q_grade": "82.75",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 34876,
+    "bouquet": "какао, жареный фундук, желтые фрукты"
+  },
+  {
+    "id": "82",
+    "name": "Arabica Brazil Yellow Bourbon NY 2/3 sc 16 up",
+    "vendor": "Бразилия",
+    "price_rub": 1097.16,
+    "usd": 11.52,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_12_15_57_03_ff02c260e4.jpg",
+    "q_grade": "83",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 300,
+    "bouquet": "какао, арахис, желтые фрукты"
+  },
+  {
+    "id": "86",
+    "name": "Arabica  Panama Honey Julliette Gesha",
+    "vendor": "Панама",
+    "price_rub": 24475.1,
+    "usd": 257.09,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_30_24_13bd34a6b3.jpg",
+    "q_grade": "90",
+    "process": "Хани",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "жасмин, персиковый сироп, абрикос, грейпфрут, помело, кешью"
+  },
+  {
+    "id": "87",
+    "name": "Arabica Panama Criolic Yuzo Gesha",
+    "vendor": "Панама",
+    "price_rub": 29960.9,
+    "usd": 314.72,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_34_03_7c59e1591c.jpg",
+    "q_grade": "90",
+    "process": "Криолик фолио (с добавлением листьев кофейного дерева)",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "огуречный лимонад, юдзу, ананас, кокос, драгонфрут, цветы, кокос, ликёр, миндаль, белое вино, леденцы"
+  },
+  {
+    "id": "88",
+    "name": "Arabica Panama Founder Selection Other Ltd Gesha",
+    "vendor": "Панама",
+    "price_rub": 40510.51,
+    "usd": 425.53,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_36_18_ec06ed6d9f.jpg",
+    "q_grade": "90",
+    "process": "Засекречена",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "вишня, маракуйя, клубника, персик, ликёр амаретто, ваниль, сахар мусковадо"
+  },
+  {
+    "id": "89",
+    "name": "Arabica Panama Natural Pink Blossom Gesha",
+    "vendor": "Панама",
+    "price_rub": 40510.51,
+    "usd": 425.53,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_38_43_8ad0b87085.jpg",
+    "q_grade": "90",
+    "process": "Анаэробная (ферментация), Солар килн",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "кафирский лайм, роза, папайя, кокос, черника, крыжовник, зеленое яблоко, специи"
+  },
+  {
+    "id": "90",
+    "name": "Arabica Panama Natural Private 227 Gesha",
+    "vendor": "Панама",
+    "price_rub": 40510.51,
+    "usd": 425.53,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_41_07_1fe143fbf8.jpg",
+    "q_grade": "90",
+    "process": "Секретная, Натуральная",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "землянистый, затхлый"
+  },
+  {
+    "id": "91",
+    "name": "Arabica Panama Kule Ruby Gesha",
+    "vendor": "Панама",
+    "price_rub": 35446.7,
+    "usd": 372.34,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_43_19_9ca5fdac66.jpg",
+    "q_grade": "90",
+    "process": "Руби",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "ежевика, гибискус, лайм, клюква, шиповник, мята, красное вино, кешью"
+  },
+  {
+    "id": "92",
+    "name": "Arabica Panama Natural Sillvia Gesha",
+    "vendor": "Панама",
+    "price_rub": 35446.7,
+    "usd": 372.34,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_45_44_7a1f705965.jpg",
+    "q_grade": "90",
+    "process": "Солар килн",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "черешня, клубника, лайм, крыжовник, карамбола, голубика, сливочная помадка"
+  },
+  {
+    "id": "93",
+    "name": "Arabica Panama Thermolic – Criolic Tigre Gesha",
+    "vendor": "Панама",
+    "price_rub": 29960.9,
+    "usd": 314.72,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_47_41_3c474143ab.jpg",
+    "q_grade": "90",
+    "process": "Термолик, Криолик фолио (с добавлением мякоти кофейной ягоды)",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "черника, белые цветы, манго, персик, маракуйя, кокос, красное вино, ваниль"
+  },
+  {
+    "id": "94",
+    "name": "Arabica Panama Natural Carmo Gesha",
+    "vendor": "Панама",
+    "price_rub": 24475.1,
+    "usd": 257.09,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_49_59_aa6a8b9b32.jpg",
+    "q_grade": "90",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "фиалка, клубника, малина, красный апельсин, ягодное вино, кактус, финик, мёд"
+  },
+  {
+    "id": "95",
+    "name": "Arabica Panama Natural Perci Gesha strawberry",
+    "vendor": "Панама",
+    "price_rub": 20255.26,
+    "usd": 212.77,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_51_57_2fc59a03ff.jpg",
+    "q_grade": "90",
+    "process": "Солар килн, Рэд",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "ананас, маракуйя, гранат, ежевика, мармелад, мята"
+  },
+  {
+    "id": "96",
+    "name": "Arabica Panama Washed Lycello Gesha",
+    "vendor": "Панама",
+    "price_rub": 20255.26,
+    "usd": 212.77,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_53_56_d6a2433103.jpg",
+    "q_grade": "90",
+    "process": "Солар килн, Мытая",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "жаренный орех, калина, клюква"
+  },
+  {
+    "id": "97",
+    "name": "Arabica Panama Thermolic Lotus Gesha",
+    "vendor": "Панама",
+    "price_rub": 16457.4,
+    "usd": 172.87,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_56_51_8863c6500c.jpg",
+    "q_grade": "90",
+    "process": "Солар килн, Хани",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "вишня, белые цветы, нектарин, маракуйя, марципан, мёд"
+  },
+  {
+    "id": "98",
+    "name": "Arabica Panama Natural Kemgin",
+    "vendor": "Панама",
+    "price_rub": 13503.5,
+    "usd": 141.84,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_59_00_36a0eb2dd1.jpg",
+    "q_grade": "90",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "зелёное яблоко, чёрная смородина, малина, лемонграсс, зелёный чай, тёплые специи, имбирный лимонад"
+  },
+  {
+    "id": "99",
+    "name": "Arabica Panama Thermolic Drima Zede Caturra",
+    "vendor": "Панама",
+    "price_rub": 13503.5,
+    "usd": 141.84,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_13_00_59_4c9d97ce3e.jpg",
+    "q_grade": "90",
+    "process": "Термолик",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "маракуйя, нектарин, ликёр лимончелло, миндаль, какао"
+  },
+  {
+    "id": "100",
+    "name": "Arabica Ethiopia Thermolic – Criolic Lomi Tasha Caturra",
+    "vendor": "Эфиопия",
+    "price_rub": 13503.5,
+    "usd": 141.84,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_12_27_18_5f396579f6.jpg",
+    "q_grade": "90",
+    "process": "Термолик, Криолик",
+    "categoryId": 1,
+    "remainder": 1,
+    "bouquet": "вишня, зелёное яблоко, цветы, апельсин, красный чай, карамель, миндаль"
+  },
+  {
+    "id": "101",
+    "name": "Arabica Panama Honey 24420 Gesha Puma",
+    "vendor": "Панама",
+    "price_rub": 10971.6,
+    "usd": 115.25,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_02_25_20_36_38_ecd1e8b4f7.jpg",
+    "q_grade": "90",
+    "process": "Хани",
+    "categoryId": 1,
+    "remainder": 24,
+    "bouquet": "цветы полевые"
+  },
+  {
+    "id": "102",
+    "name": "Arabica Panama Experimental 227 24176 Amaro Tapir",
+    "vendor": "Панама",
+    "price_rub": 45574.33,
+    "usd": 478.72,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_02_25_21_18_53_755ecc877f.jpg",
+    "q_grade": "90",
+    "process": "Экспериментальная",
+    "categoryId": 1,
+    "remainder": 10,
+    "bouquet": "клубника, персик, маракуйя, бобы тонка, ликёр, красное яблоко, мармелад, слива, сливки, тёмный шоколад"
+  },
+  {
+    "id": "103",
+    "name": "Arabica Panama Criolic Folio 24189 Gesha Cora",
+    "vendor": "Панама",
+    "price_rub": 29960.9,
+    "usd": 314.72,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_02_25_21_21_44_913b768a38.jpg",
+    "q_grade": "90",
+    "process": "Криолик фолио",
+    "categoryId": 1,
+    "remainder": 10,
+    "bouquet": "цветы, красные ягоды, хмель цитра, солод, желтое яблоко, лайм, мята, гранат"
+  },
+  {
+    "id": "104",
+    "name": "Arabica Panama Washed B24WC Caturra blend",
+    "vendor": "Панама",
+    "price_rub": 5485.8,
+    "usd": 57.62,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_02_25_21_24_04_81f8f9963c.jpg",
+    "q_grade": "90",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 120,
+    "bouquet": "жаренный орех"
+  },
+  {
+    "id": "106",
+    "name": "Arabica Panama Thermolic B24TC Caturra blend",
+    "vendor": "Панама",
+    "price_rub": 6329.77,
+    "usd": 66.49,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_02_13_08_22_3dbb6c4f6f.jpg",
+    "q_grade": "90",
+    "process": "Термолик",
+    "categoryId": 1,
+    "remainder": 57,
+    "bouquet": "Guinness, ваниль, ананас, кокос, редька, папайя, гвоздика, какао-бобы, кориандр"
+  },
+  {
+    "id": "107",
+    "name": "Arabica Panama Criolic Folio B24CC Caturra blend",
+    "vendor": "Панама",
+    "price_rub": 8439.69,
+    "usd": 88.65,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_02_25_21_40_49_f080116d79.jpg",
+    "q_grade": "90",
+    "process": "Криолик",
+    "categoryId": 1,
+    "remainder": 90,
+    "bouquet": "мандарин, огурец, полынь, лимон, солод, квашенная капуста"
+  },
+  {
+    "id": "108",
+    "name": "Arabica Panama Thermolic Burgundy Gesha Blend",
+    "vendor": "Панама",
+    "price_rub": 10971.6,
+    "usd": 115.25,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_02_25_21_44_32_3cc43c8778.jpg",
+    "q_grade": "90",
+    "process": "Термолик",
+    "categoryId": 1,
+    "remainder": 60,
+    "bouquet": "Роза, смородина, лимон, марципан, крепленое вино, драгонфрут"
+  },
+  {
+    "id": "109",
+    "name": "Arabica Rwanda Muteteli scr 15+ washed grainpro",
+    "vendor": "Руанда",
+    "price_rub": 1012.76,
+    "usd": 10.64,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_16_12_13_36_40b5ee9e24.jpg",
+    "q_grade": null,
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 597,
+    "bouquet": "белые цветы, красные ягоды, черный чай, сухофрукты"
+  },
+  {
+    "id": "110",
+    "name": "Arabica Kenya AB washed grainpro",
+    "vendor": "Кения",
+    "price_rub": 1265.95,
+    "usd": 13.3,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_16_12_24_25_16d8927ace.jpg",
+    "q_grade": "82.75",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 560,
+    "bouquet": "сухофрукты, красные ягоды"
+  },
+  {
+    "id": "111",
+    "name": "Arabica Colombia Papayo Collazos",
+    "vendor": "Колумбия",
+    "price_rub": 3797.86,
+    "usd": 39.89,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_23_22_11_37_2_38a8e1b819.jpg",
+    "q_grade": "88.5",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 144,
+    "bouquet": "груша, папайя, амаретто, акация"
+  },
+  {
+    "id": "112",
+    "name": "Arabica Colombia SL 28 Patio Bonito natural",
+    "vendor": "Колумбия",
+    "price_rub": 5232.61,
+    "usd": 54.96,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_24_17_26_59_6a99993715.jpg",
+    "q_grade": "87.75",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 56,
+    "bouquet": "сладкий мармелад, мультифрукт, вишня, персик"
+  },
+  {
+    "id": "113",
+    "name": "Arabica Colombia El Rincon natural",
+    "vendor": "Колумбия",
+    "price_rub": 3038.29,
+    "usd": 31.91,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_24_17_34_49_1027979944.jpg",
+    "q_grade": "87",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 156,
+    "bouquet": "яблочный сидр, манго, ананас, темный шоколад, темная слива"
+  },
+  {
+    "id": "114",
+    "name": "Arabica Colombia Wush Wush Santa Ana Natural",
+    "vendor": "Колумбия",
+    "price_rub": 5232.61,
+    "usd": 54.96,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_24_17_40_00_1ac38fc2f1.jpg",
+    "q_grade": "87.25",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 108,
+    "bouquet": "белый виноград, марципан, красное яблоко, белые цветы"
+  },
+  {
+    "id": "115",
+    "name": "Arabica Colombia Bourbon Aji Santa Ana Natural",
+    "vendor": "Колумбия",
+    "price_rub": 4895.02,
+    "usd": 51.42,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_24_17_43_57_ef358e0e03.jpg",
+    "q_grade": "86.75",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 94,
+    "bouquet": "молочный шоколад, вишня, лайм, желтая слива, маракуя"
+  }
+];
+
+    const TABS = [
+      { id: "sea", label: "В пути" },
+      { id: "promo", label: "Акционные" },
+      { id: "q90", label: "90+" },
+      { id: "high_tone", label: "High Tone" },
+      { id: "exotic85", label: "Экзотика Q85" },
+      { id: "finecomm", label: "FineComm" },
+      { id: "best", label: "Best Value" },
+      { id: "decaf", label: "Decaf" },
+      { id: "equip", label: "Оборудование" },
+      { id: "all", label: "Все" },
+    ];
+
+    const TAB_BLURBS = {
+      sea: "Лоты ещё в море: закуп с выгодой по цене в пути, ETA и трекингом до склада.",
+      promo: "Три готовых сценария закупа: входной чек, яркая розница и выкуп контейнера.",
+      q90: "Лоты с оценкой Q 90+ — верхний сегмент спешелти для витрины и сильных сетов.",
+      high_tone: "Яркие профили High Tone: фрукты, ферментации и узнаваемые сорта для акцентных позиций.",
+      exotic85: "Экзотика и сложные лоты около Q 85–89.9 — ассортимент «выше коммерции».",
+      finecomm: "Fine Commercial: стабильный коммерческий сегмент с понятным Q и рабочей экономикой.",
+      best: "Best Value — основной складской объём: цена/качество для регулярного закупа.",
+      decaf: "Декаф для меню без кофеина — отдельная полка прайса.",
+      equip: "Обжарочное и лабораторное оборудование — раздел готовится к наполнению.",
+      all: "Полный каталог зелёного кофе без нарезки по сегментам прайса — удобно искать фильтром.",
+    };
+
+    const HIGH_TONE_PATTERNS = [
+      "papayo", "sl 28", "sl28", "wush wush", "el rincon", "bourbon aji",
+      "pink bourbon", "gesha la union"
+    ];
+
+    const FINE_PATTERNS = [" fc", " fc ", "santos", "cheboko", "cerrado", "pitalito", "yellow bourbon", "alta mogiana"];
+
+    const TRANSIT_MATCH = [
+      (n) => n.includes("chelelektu"),
+      (n) => n.includes("arara") && n.includes("grainpro"),
+      (n) => n.includes("castillo diofanor") && n.includes("infuse"),
+    ];
+
+    /** Demo ETA forecasts for in-transit lots (not a hard date promise). */
+    const TRANSIT_ETA = [
+      { test: (n) => n.includes("chelelektu"), eta: "кон. октября", port: "Санкт-Петербург" },
+      { test: (n) => n.includes("arara") && n.includes("grainpro"), eta: "сер. октября", port: "Санкт-Петербург" },
+      { test: (n) => n.includes("castillo diofanor") && n.includes("infuse"), eta: "нач. ноября", port: "Санкт-Петербург" },
+    ];
+    const TRANSIT_ETA_FALLBACK = { eta: "сер. октября", port: "Санкт-Петербург" };
+
+    const FILTER_GROUPS = [
+      { id: "species", label: "Сорт" },
+      { id: "country", label: "Страна" },
+      { id: "process", label: "Обработка" },
+      { id: "qgrade", label: "Q Grade" },
+    ];
+
+    const Q_BUCKETS = [
+      { id: "none", label: "без Q" },
+      { id: "lt82", label: "до 82" },
+      { id: "82-84.9", label: "82–84.9" },
+      { id: "85-89.9", label: "85–89.9" },
+      { id: "90+", label: "90+" },
+    ];
+
+    const SORT_OPTIONS = [
+      { id: "", label: "По умолчанию" },
+      { id: "price-asc", label: "По цене ↑" },
+      { id: "price-desc", label: "По цене ↓" },
+      { id: "q-asc", label: "По Q ↑" },
+      { id: "q-desc", label: "По Q ↓" },
+      { id: "newer", label: "Сначала новые" },
+    ];
+
+    let rawOffers = [];
+    let catalog = [];
+    let favorites = new Set();
+    /** Cart like «Товар в пути»: { kg, bags } keyed by offer id. Pack step 60 кг. */
+    const PACK_KG = 60;
+    const RUB_RATE = 95.2;
+    const cart = new Map();
+    let toastTimer = null;
+    let buyProductId = null;
+    let buyQtyKg = PACK_KG;
+
+    const state = {
+      tab: "sea",
+      search: "",
+      listView: false,
+      sort: "",
+      filters: { species: new Set(), country: new Set(), process: new Set(), qgrade: new Set() },
+      draftFilters: null,
+      filterGroup: "species",
+      sortOpen: false,
+      filterOpen: false,
+      cartOpen: false,
+      buyOpen: false,
+    };
+
+    function parseQ(v) {
+      if (v == null || v === "") return null;
+      const n = parseFloat(String(v).replace(",", "."));
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function normName(s) { return (s || "").toLowerCase(); }
+
+    function isTransit(o) {
+      const n = normName(o.name);
+      return TRANSIT_MATCH.some((fn) => fn(n));
+    }
+
+    function transitEtaInfo(o) {
+      const n = normName(o.name);
+      const hit = TRANSIT_ETA.find((row) => row.test(n));
+      return hit || TRANSIT_ETA_FALLBACK;
+    }
+
+    function transitTagHtml(p, mode) {
+      if (!p.inTransit) return "";
+      const label = "В пути";
+      const tip = [p.etaLabel, p.etaPort].filter(Boolean).join(" · ");
+      return `<span class="tag-transit"${tip ? ` title="${esc("ETA · " + tip)}"` : ""}>${esc(label)}</span>`;
+    }
+
+    function etaLineHtml(p) {
+      if (!p.inTransit) return "";
+      const eta = p.etaLabel || "сер. октября";
+      const port = p.etaPort || "Санкт-Петербург";
+      return `<div class="eta-line"><b>ETA</b> · ${esc(eta)} · ${esc(port)}</div>`;
+    }
+
+    function isHighTone(o) {
+      const n = normName(o.name);
+      const q = parseQ(o.q_grade);
+      if (o.vendor === "Колумбия" && q != null && q >= 85) {
+        if (HIGH_TONE_PATTERNS.some((p) => n.includes(p))) return true;
+      }
+      return HIGH_TONE_PATTERNS.some((p) => n.includes(p));
+    }
+
+    function isFineComm(o) {
+      const n = normName(o.name);
+      const q = parseQ(o.q_grade);
+      if (q == null || q < 80 || q > 84.5) return false;
+      if (n.includes(" fc") || n.endsWith(" fc") || n.includes("ny2") && n.includes("fc")) return true;
+      return FINE_PATTERNS.some((p) => n.includes(p.trim()) || n.includes(p));
+    }
+
+    function assignBucket(o) {
+      const n = normName(o.name);
+      if (/decaf/i.test(o.name)) return "decaf";
+      if (isTransit(o)) return "sea";
+      const q = parseQ(o.q_grade);
+      if (q != null && q >= 90) return "q90";
+      if (o.vendor === "Панама" && q != null && q >= 90) return "q90";
+      if (isHighTone(o)) return "high_tone";
+      if (q != null && q >= 85) return "exotic85";
+      if (isFineComm(o)) return "finecomm";
+      return "best";
+    }
+
+    /** Три акционных слота: малый чек / розница / контейнер. */
+    const PROMO_PREFS = [
+      {
+        kind: "check",
+        badge: "Малый чек",
+        preferIds: ["172", "173", "52", "50"],
+        pick: (list) => list.slice().sort((a, b) => a.priceUsd - b.priceUsd)[0] || null,
+      },
+      {
+        kind: "retail",
+        badge: "Розница",
+        preferIds: ["157", "163", "156"],
+        pick: (list) =>
+          list
+            .filter((p) => p.qNum != null && p.qNum >= 85 && p.priceUsd > 0 && p.priceUsd < 25)
+            .sort((a, b) => (b.qNum - a.qNum) || (a.priceUsd - b.priceUsd))[0] || null,
+      },
+      {
+        kind: "container",
+        badge: "Контейнер",
+        preferIds: ["169", "166", "148", "171"],
+        pick: (list) => {
+          const boxed = list.filter((p) => /box|контейнер|19200|15000/i.test(p.name) || (p.remainder || 0) >= 15000);
+          if (boxed.length) return boxed.sort((a, b) => (b.remainder || 0) - (a.remainder || 0))[0];
+          return list.slice().sort((a, b) => (b.remainder || 0) - (a.remainder || 0))[0] || null;
+        },
+      },
+    ];
+
+    function offerUsd(o) {
+      return o.usd != null ? o.usd : (o.price_rub ? o.price_rub / 95.2 : 0);
+    }
+
+    function resolvePromoLots() {
+      const used = new Set();
+      const out = [];
+      for (const slot of PROMO_PREFS) {
+        let hit = null;
+        for (const id of slot.preferIds) {
+          const p = catalog.find((x) => String(x.id) === String(id));
+          if (p && !used.has(String(p.id))) {
+            hit = p;
+            break;
+          }
+        }
+        if (!hit) {
+          const candidates = catalog.filter((p) => !used.has(String(p.id)));
+          hit = slot.pick(candidates);
+        }
+        if (hit) {
+          used.add(String(hit.id));
+          out.push({ ...hit, isPromo: true, promoBadge: slot.badge, promoKind: slot.kind });
+        }
+      }
+      return out;
+    }
+
+    function speciesKind(o) {
+      const n = normName(o.name);
+      if (n.includes("canephora")) return "canephora";
+      if (o.categoryId === 2 || n.includes("robusta")) return "robusta";
+      return "arabica";
+    }
+
+    function enrichOffer(o) {
+      const q = parseQ(o.q_grade);
+      const inTransit = isTransit(o);
+      const eta = inTransit ? transitEtaInfo(o) : null;
+      const bucket = assignBucket(o);
+      return {
+        ...o,
+        qNum: q,
+        bucket,
+        inTransit,
+        isPromo: false,
+        promoBadge: null,
+        promoKind: null,
+        etaLabel: eta ? eta.eta : null,
+        etaPort: eta ? eta.port : null,
+        species: speciesKind(o),
+        processLabel: o.process || "—",
+        bouquetLabel: (o.bouquet && String(o.bouquet).trim()) || "",
+        priceUsd: offerUsd(o),
+      };
+    }
+
+    function buildCatalog(offers) {
+      catalog = offers.map(enrichOffer);
+    }
+
+    function promoById() {
+      const map = new Map();
+      for (const p of resolvePromoLots()) map.set(String(p.id), p);
+      return map;
+    }
+
+    function withPromoBadge(list) {
+      const map = promoById();
+      return list.map((p) => {
+        const promo = map.get(String(p.id));
+        if (!promo) return p;
+        return {
+          ...p,
+          isPromo: true,
+          promoBadge: promo.promoBadge,
+          promoKind: promo.promoKind,
+        };
+      });
+    }
+
+    function lotsInTab(tabId) {
+      if (tabId === "equip") return [];
+      if (tabId === "promo") return resolvePromoLots();
+      if (tabId === "all") {
+        const promo = resolvePromoLots();
+        const promoIds = new Set(promo.map((p) => String(p.id)));
+        const rest = catalog.filter((p) => !promoIds.has(String(p.id)));
+        return [...promo, ...rest];
+      }
+      return withPromoBadge(catalog.filter((p) => p.bucket === tabId));
+    }
+
+    function countInTab(tabId) {
+      return lotsInTab(tabId).length;
+    }
+
+    function filteredList() {
+      if (state.tab === "equip") return [];
+      const q = state.search.trim().toLowerCase();
+      let list = lotsInTab(state.tab).filter((p) => passesFilters(p));
+      if (q) {
+        list = list.filter((p) =>
+          p.name.toLowerCase().includes(q) ||
+          (p.vendor && p.vendor.toLowerCase().includes(q)) ||
+          (p.processLabel && p.processLabel.toLowerCase().includes(q)) ||
+          (p.bouquetLabel && p.bouquetLabel.toLowerCase().includes(q))
+        );
+      }
+      list = sortList(list);
+      return list;
+    }
+
+    function previewCount(filters) {
+      if (state.tab === "equip") return 0;
+      const q = state.search.trim().toLowerCase();
+      return lotsInTab(state.tab).filter((p) => {
+        if (!passesFilters(p, filters)) return false;
+        if (!q) return true;
+        return p.name.toLowerCase().includes(q) || (p.vendor && p.vendor.toLowerCase().includes(q));
+      }).length;
+    }
+
+    function paintPaneHead(tabLabel, itemsLen) {
+      const paneTitle = document.getElementById("paneTitle");
+      const paneBlurb = document.getElementById("paneBlurb");
+      const blurb = TAB_BLURBS[state.tab] || "";
+      if (paneBlurb) paneBlurb.textContent = blurb;
+      if (!paneTitle) return;
+      if (state.tab === "equip") {
+        paneTitle.innerHTML = esc(tabLabel);
+        return;
+      }
+      const totalInTab = countInTab(state.tab);
+      const cntLabel = itemsLen === totalInTab
+        ? String(totalInTab)
+        : itemsLen + " из " + totalInTab;
+      paneTitle.innerHTML = `${esc(tabLabel)}<span class="cnt">${esc(cntLabel)}</span>`;
+    }
+
+    async function loadOffers() {
+      try {
+        const res = await fetch("./offers.json", { cache: "no-store" });
+        if (!res.ok) throw new Error("bad status");
+        const data = await res.json();
+        rawOffers = data.offers || data;
+      } catch (_) {
+        rawOffers = EMBEDDED_OFFERS.slice();
+      }
+      buildCatalog(rawOffers);
+    }
+
+    function qBucketForProduct(p) {
+      const q = p.qNum;
+      if (q == null) return "none";
+      if (q >= 90) return "90+";
+      if (q >= 85) return "85-89.9";
+      if (q >= 82) return "82-84.9";
+      return "lt82";
+    }
+
+    function passesFilters(p, filters = state.filters) {
+      if (filters.species.size) {
+        if (!filters.species.has(p.species)) return false;
+      }
+      if (filters.country.size && !filters.country.has(p.vendor)) return false;
+      if (filters.process.size) {
+        const proc = p.process || "—";
+        if (!filters.process.has(proc)) return false;
+      }
+      if (filters.qgrade.size && !filters.qgrade.has(qBucketForProduct(p))) return false;
+      return true;
+    }
+
+    function sortList(list) {
+      const s = state.sort;
+      const copy = list.slice();
+      if (!s) return copy;
+      if (s === "price-asc") return copy.sort((a, b) => a.priceUsd - b.priceUsd);
+      if (s === "price-desc") return copy.sort((a, b) => b.priceUsd - a.priceUsd);
+      if (s === "q-asc") return copy.sort((a, b) => (a.qNum ?? -1) - (b.qNum ?? -1));
+      if (s === "q-desc") return copy.sort((a, b) => (b.qNum ?? -1) - (a.qNum ?? -1));
+      if (s === "newer") return copy.sort((a, b) => Number(b.id) - Number(a.id));
+      return copy;
+    }
+
+    function formatPrice(usd) {
+      const n = Number(usd);
+      const s = Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/\.?0+$/, "");
+      return "$ " + s + " / кг";
+    }
+
+    function usdTot(n) {
+      return "$ " + Number(n).toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function rub(n) {
+      return Math.round(Number(n) * RUB_RATE).toLocaleString("ru-RU") + " ₽";
+    }
+
+    function usdBagShort(n) {
+      const x = Number(n);
+      return "$" + (Number.isInteger(x) ? String(x) : x.toFixed(2).replace(/\.?0+$/, ""));
+    }
+
+    function packOf(p) {
+      return PACK_KG;
+    }
+
+    function availableKg(p) {
+      const rem = Number(p.remainder);
+      if (Number.isFinite(rem) && rem > 0) return rem;
+      return packOf(p) * 40;
+    }
+
+    function findProduct(id) {
+      return catalog.find((x) => String(x.id) === String(id)) || null;
+    }
+
+    function snapKg(n, p) {
+      const step = packOf(p);
+      const max = availableKg(p);
+      let kg = Math.round(Number(n) / step) * step;
+      if (!Number.isFinite(kg) || kg < step) kg = step;
+      const cap = Math.floor(max / step) * step;
+      if (kg > cap) kg = Math.max(step, cap);
+      return kg;
+    }
+
+    function toast(msg) {
+      const el = document.getElementById("toast");
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.add("on");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("on"), 1800);
+    }
+
+    function cartBags(id) {
+      return cart.get(String(id))?.bags || 0;
+    }
+
+    function cartKg(id) {
+      return cart.get(String(id))?.kg || 0;
+    }
+
+    function cartTotalBags() {
+      let n = 0;
+      cart.forEach((row) => { n += row.bags; });
+      return n;
+    }
+
+    function cartTotalUsd() {
+      let sum = 0;
+      cart.forEach((row, id) => {
+        const p = findProduct(id);
+        if (p) sum += row.kg * p.priceUsd;
+      });
+      return sum;
+    }
+
+    function setCartKg(id, kg) {
+      const key = String(id);
+      const p = findProduct(key);
+      if (!p) return;
+      const next = snapKg(kg, p);
+      if (next <= 0) cart.delete(key);
+      else cart.set(key, { kg: next, bags: Math.round(next / packOf(p)) });
+      updateDockCartBadge();
+      if (state.cartOpen) renderCartSheet();
+    }
+
+    function changeCartBags(id, deltaBags) {
+      const p = findProduct(id);
+      if (!p) return;
+      const step = packOf(p);
+      const prev = cartKg(id);
+      const next = prev + deltaBags * step;
+      if (next < step) {
+        cart.delete(String(id));
+        updateDockCartBadge();
+        if (state.cartOpen) renderCartSheet();
+        toast("Убрано из корзины");
+        renderProducts();
+        return;
+      }
+      setCartKg(id, next);
+      renderProducts();
+    }
+
+    function updateDockCartBadge() {
+      const badge = document.getElementById("dockCartBadge");
+      if (!badge) return;
+      const n = cartTotalBags();
+      badge.textContent = String(n);
+      badge.classList.toggle("on", n > 0);
+    }
+
+    function paintBuySum() {
+      const p = findProduct(buyProductId);
+      if (!p) return;
+      const inp = document.getElementById("buyKg");
+      const sum = document.getElementById("buySum");
+      if (inp) inp.value = buyQtyKg;
+      if (sum) sum.textContent = usdTot(buyQtyKg * p.priceUsd) + " / " + rub(buyQtyKg * p.priceUsd);
+    }
+
+    function closeBuySheet() {
+      state.buyOpen = false;
+      buyProductId = null;
+      const sheet = document.getElementById("buySheet");
+      if (sheet) {
+        sheet.classList.remove("open");
+        sheet.setAttribute("aria-hidden", "true");
+      }
+    }
+
+    function openBuySheet(id) {
+      const p = findProduct(id);
+      if (!p) return;
+      buyProductId = String(id);
+      const step = packOf(p);
+      const existing = cartKg(id);
+      buyQtyKg = snapKg(existing || step, p);
+      const bag = p.priceUsd * step;
+      const avail = availableKg(p);
+      const chips = [1, 2, 3, 4]
+        .map((n) => `<button type="button" data-buy-add="${step * n}">+ ${step * n}</button>`)
+        .join("");
+      const card = document.getElementById("buyCard");
+      card.innerHTML = `
+        <div class="buy-head">
+          <b>${esc(p.name.trim())}</b>
+          <button type="button" class="buy-x" id="buyClose" aria-label="Закрыть">✕</button>
+        </div>
+        <div class="buy-info">
+          ${usdBagShort(p.priceUsd)} / ${rub(bag)} за ${step} кг
+          <div class="avail-line">Доступно для заказа: ${avail.toLocaleString("ru-RU")} кг</div>
+        </div>
+        <div class="buy-label">Укажите количество</div>
+        <div class="buy-qty-box">
+          <input id="buyKg" type="number" min="${step}" step="${step}" value="${buyQtyKg}" inputmode="numeric">
+          <div class="sum" id="buySum">${usdTot(buyQtyKg * p.priceUsd)} / ${rub(buyQtyKg * p.priceUsd)}</div>
+        </div>
+        <div class="buy-chips">${chips}</div>
+        <button class="buy-cta" type="button" id="buyConfirm">${p.inTransit ? "Купить в пути" : "Добавить в заказ"}</button>`;
+      state.buyOpen = true;
+      const sheet = document.getElementById("buySheet");
+      sheet.classList.add("open");
+      sheet.setAttribute("aria-hidden", "false");
+    }
+
+    function cartAddBtn(id) {
+      return `<button type="button" class="cart-add" aria-label="Добавить в корзину" data-cart-add="${esc(id)}">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 6.2h1.6l1.1 8.1a1.5 1.5 0 0 0 1.5 1.3h8.2a1.5 1.5 0 0 0 1.48-1.22L19.3 8H7" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="10.2" cy="19" r="1.35" fill="currentColor"/>
+          <circle cx="16.2" cy="19" r="1.35" fill="currentColor"/>
+          <circle cx="17.8" cy="5.2" r="3.55" fill="currentColor"/>
+          <path d="M17.8 3.55v3.3M16.15 5.2h3.3" stroke="#fff" stroke-width="1.85" stroke-linecap="round"/>
+        </svg>
+      </button>`;
+    }
+
+    function cartQtyCtrl(id, bags) {
+      return `<div class="cart-qty" role="group" aria-label="Количество в корзине">
+        <button type="button" data-cart-dec="${esc(id)}" aria-label="Уменьшить">−</button>
+        <span class="cart-qty-n">${bags}</span>
+        <button type="button" data-cart-inc="${esc(id)}" aria-label="Увеличить">+</button>
+      </div>`;
+    }
+
+    function priceRowHtml(p) {
+      const bags = cartBags(p.id);
+      return `<div class="price-row">
+        <span class="price">${formatPrice(p.priceUsd)}</span>
+        ${bags > 0 ? cartQtyCtrl(p.id, bags) : cartAddBtn(p.id)}
+      </div>`;
+    }
+
+    function renderCartSheet() {
+      const body = document.getElementById("cartSheetBody");
+      const foot = document.getElementById("cartSheetFoot");
+      const tot = document.getElementById("cartTotalUsd");
+      if (!body) return;
+      if (!cart.size) {
+        body.innerHTML = `<div class="cart-empty">Корзина пуста</div>`;
+        if (foot) foot.hidden = true;
+        return;
+      }
+      if (foot) foot.hidden = false;
+      const rows = [];
+      cart.forEach((row, id) => {
+        const p = findProduct(id);
+        if (!p) return;
+        const line = row.kg * p.priceUsd;
+        const eta = p.inTransit ? etaLineHtml(p) : "";
+        const step = packOf(p);
+        rows.push(`<div class="cart-card" data-id="${esc(id)}">
+          <div class="n">${esc(p.name.trim())}${p.inTransit ? " · в пути" : ""}</div>
+          ${eta}
+          <div class="meta">Мешков: ${row.bags} (${row.kg} кг) · ${step} кг / мешок</div>
+          <div class="row">
+            ${cartQtyCtrl(id, row.bags)}
+            <div class="sum">$ ${line.toFixed(2)}</div>
+          </div>
+        </div>`);
+      });
+      body.innerHTML = rows.join("");
+      if (tot) tot.textContent = "$ " + cartTotalUsd().toFixed(2);
+      body.querySelectorAll("[data-cart-dec]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          changeCartBags(btn.dataset.cartDec, -1);
+        });
+      });
+      body.querySelectorAll("[data-cart-inc]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          changeCartBags(btn.dataset.cartInc, 1);
+        });
+      });
+    }
+
+    function openCartSheet() {
+      state.filterOpen = false;
+      state.sortOpen = false;
+      state.draftFilters = null;
+      document.getElementById("filterSheet").classList.remove("open");
+      document.getElementById("sortSheet").classList.remove("open");
+      document.getElementById("dropMenu").classList.remove("open");
+      state.cartOpen = true;
+      const sheet = document.getElementById("cartSheet");
+      const overlay = document.getElementById("overlay");
+      if (sheet) {
+        sheet.classList.add("open");
+        sheet.setAttribute("aria-hidden", "false");
+      }
+      if (overlay) overlay.classList.add("open");
+      setDock("cart");
+      renderCartSheet();
+    }
+
+    function setDock(name) {
+      document.querySelectorAll(".dock button").forEach((b) => {
+        b.classList.toggle("on", b.dataset.dock === name);
+      });
+    }
+
+    function esc(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+    }
+
+    function allCatalogPictures() {
+      const seen = new Set();
+      const list = [];
+      for (const p of catalog) {
+        if (!p.picture || seen.has(p.picture)) continue;
+        seen.add(p.picture);
+        list.push(p.picture);
+      }
+      return list;
+    }
+
+    function galleryUrls(p) {
+      const pool = allCatalogPictures();
+      const urls = [];
+      if (p.picture) urls.push(p.picture);
+      if (pool.length) {
+        const seed = Number(p.id) || 0;
+        for (let i = 1; i <= 2 && urls.length < 3; i++) {
+          const alt = pool[(seed + i * 7) % pool.length];
+          if (alt && !urls.includes(alt)) urls.push(alt);
+        }
+      }
+      if (!urls.length) urls.push("");
+      return urls;
+    }
+
+    function renderCard(p) {
+      const tag = transitTagHtml(p, "list");
+      const promoTag = p.promoBadge ? `<span class="tag-promo">${esc(p.promoBadge)}</span>` : "";
+      const qPill = p.qNum != null ? `<span class="pill pill-q">Q ${p.qNum}</span>` : "";
+      const procPill = p.processLabel && p.processLabel !== "—"
+        ? `<span class="pill pill-process" title="${esc(p.processLabel)}">${esc(p.processLabel)}</span>`
+        : "";
+      const fav = favorites.has(p.id) ? "on" : "";
+      if (state.listView) {
+        const bits = [];
+        if (p.qNum != null) bits.push(`<span class="meta-q">Q ${p.qNum}</span>`);
+        if (p.processLabel && p.processLabel !== "—") {
+          if (bits.length) bits.push(`<span class="meta-sep">·</span>`);
+          bits.push(`<span class="meta-process" title="${esc(p.processLabel)}">${esc(p.processLabel)}</span>`);
+        }
+        const metaText = bits.length ? bits.join("") : "";
+        const metaInner = `${promoTag}${tag}${metaText}`;
+        const meta = metaInner
+          ? `<div class="meta">${metaInner}</div>`
+          : "";
+        return `<div class="lrow" data-id="${esc(p.id)}" role="button" tabindex="0">
+          <div class="card-title">${esc(p.name.trim())}</div>
+          ${etaLineHtml(p)}
+          ${meta}
+          <div class="card-foot">
+            ${priceRowHtml(p)}
+            <button type="button" class="pic-fav ${fav}" data-fav="${esc(p.id)}" aria-label="Избранное">♥</button>
+          </div>
+        </div>`;
+      }
+      const slides = galleryUrls(p);
+      const slidesHtml = slides.map((src, i) => {
+        if (!src) return `<div class="pic-slide" data-i="${i}"><div class="ph"></div></div>`;
+        return `<div class="pic-slide" data-i="${i}"><img src="${esc(src)}" alt="" loading="${i === 0 ? "eager" : "lazy"}" draggable="false" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='block')"><div class="ph" style="display:none"></div></div>`;
+      }).join("");
+      const dotsHtml = slides.length > 1
+        ? `<div class="pic-dots" aria-hidden="true">${slides.map((_, i) => `<span class="pic-dot${i === 0 ? " on" : ""}" data-dot="${i}"></span>`).join("")}</div>`
+        : "";
+      const transitOnPic = transitTagHtml(p, "grid");
+      const promoOnPic = p.promoBadge ? `<span class="tag-promo">${esc(p.promoBadge)}</span>` : "";
+      const pills = (qPill || procPill) ? `<div class="pills">${qPill}${procPill}</div>` : "";
+      return `<article class="card" data-id="${esc(p.id)}">
+        <div class="pic">
+          <div class="pic-track" data-gallery>${slidesHtml}</div>
+          <div class="pic-badges">${promoOnPic}${transitOnPic}${pills}</div>
+          <button type="button" class="pic-fav ${fav}" data-fav="${esc(p.id)}" aria-label="Избранное">♥</button>
+          ${dotsHtml}
+        </div>
+        <div class="card-body">
+          <div class="card-title">${esc(p.name.trim())}</div>
+          ${etaLineHtml(p)}
+          <div class="card-foot">
+            ${priceRowHtml(p)}
+          </div>
+        </div>
+      </article>`;
+    }
+
+    function bindGalleries(root) {
+      root.querySelectorAll("[data-gallery]").forEach((track) => {
+        const pic = track.closest(".pic");
+        const dots = pic ? pic.querySelectorAll(".pic-dot") : [];
+        if (!dots.length) return;
+        const sync = () => {
+          const w = track.clientWidth || 1;
+          const i = Math.round(track.scrollLeft / w);
+          dots.forEach((d, di) => d.classList.toggle("on", di === i));
+        };
+        track.addEventListener("scroll", sync, { passive: true });
+        track.addEventListener("pointerdown", (e) => e.stopPropagation());
+      });
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById("productGrid");
+      const empty = document.getElementById("emptyState");
+      const tab = TABS.find((t) => t.id === state.tab);
+      const tabLabel = tab ? tab.label : "";
+      if (state.tab === "equip") {
+        grid.innerHTML = "";
+        paintPaneHead(tabLabel, 0);
+        empty.textContent = "Скоро";
+        empty.classList.add("visible");
+        return;
+      }
+      const items = filteredList();
+      paintPaneHead(tabLabel, items.length);
+      empty.classList.toggle("visible", items.length === 0);
+      empty.textContent = "Ничего не найдено";
+      grid.classList.toggle("list-view", state.listView);
+      grid.innerHTML = items.map(renderCard).join("");
+      grid.querySelectorAll("[data-fav]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const id = btn.dataset.fav;
+          if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
+          renderProducts();
+        });
+      });
+      grid.querySelectorAll("[data-cart-add]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openBuySheet(btn.dataset.cartAdd);
+        });
+      });
+      grid.querySelectorAll("[data-cart-inc]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openBuySheet(btn.dataset.cartInc);
+        });
+      });
+      grid.querySelectorAll("[data-cart-dec]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          changeCartBags(btn.dataset.cartDec, -1);
+        });
+      });
+      bindGalleries(grid);
+      requestAnimationFrame(updateLayoutMetrics);
+    }
+
+    function renderSidebar() {
+      const el = document.getElementById("sidebar");
+      el.innerHTML = TABS.map((t) => {
+        const n = countInTab(t.id);
+        const on = t.id === state.tab ? " on" : "";
+        const cnt = t.id === "equip" ? "" : `<span class="cnt">${n}</span>`;
+        return `<button type="button" class="tab-item${on}" data-tab="${t.id}">${esc(t.label)}${cnt}</button>`;
+      }).join("");
+      el.querySelectorAll(".tab-item").forEach((btn) => {
+        btn.addEventListener("click", () => setTab(btn.dataset.tab));
+      });
+    }
+
+    function setTab(tabId) {
+      state.tab = tabId;
+      renderSidebar();
+      renderProducts();
+      updateChipStates();
+      const active = document.querySelector(`.tab-item[data-tab="${tabId}"]`);
+      if (active) active.scrollIntoView({ block: "nearest" });
+    }
+
+    function cloneFilters(f) {
+      return {
+        species: new Set(f.species),
+        country: new Set(f.country),
+        process: new Set(f.process),
+        qgrade: new Set(f.qgrade),
+      };
+    }
+
+    function uniqueVendors() {
+      return [...new Set(catalog.map((p) => p.vendor).filter(Boolean))].sort((a, b) => a.localeCompare(b, "ru"));
+    }
+    function uniqueProcesses() {
+      return [...new Set(catalog.map((p) => p.process || "—"))].sort((a, b) => a.localeCompare(b, "ru"));
+    }
+
+    let filterSectionObserver = null;
+    let filterScrollSyncLock = false;
+
+    function optsHtmlForGroup(gid, f) {
+      if (gid === "species") {
+        const items = [
+          { id: "arabica", label: "Арабика" },
+          { id: "robusta", label: "Робуста" },
+          { id: "canephora", label: "Канефора" },
+        ];
+        return items.map((it) => {
+          const on = f.species.has(it.id) ? " on" : "";
+          return `<button type="button" class="opt${on}" data-g="species" data-v="${it.id}">${it.label}</button>`;
+        }).join("");
+      }
+      if (gid === "country") {
+        return uniqueVendors().map((v) => {
+          const on = f.country.has(v) ? " on" : "";
+          return `<button type="button" class="opt${on}" data-g="country" data-v="${esc(v)}">${esc(v)}</button>`;
+        }).join("");
+      }
+      if (gid === "process") {
+        return uniqueProcesses().map((v) => {
+          const on = f.process.has(v) ? " on" : "";
+          return `<button type="button" class="opt${on}" data-g="process" data-v="${esc(v)}">${esc(v)}</button>`;
+        }).join("");
+      }
+      if (gid === "qgrade") {
+        return Q_BUCKETS.map((b) => {
+          const on = f.qgrade.has(b.id) ? " on" : "";
+          return `<button type="button" class="opt${on}" data-g="qgrade" data-v="${b.id}">${b.label}</button>`;
+        }).join("");
+      }
+      return "";
+    }
+
+    function highlightFilterGroup(gid) {
+      document.querySelectorAll("#filterGroups button").forEach((btn) => {
+        btn.classList.toggle("on", btn.dataset.g === gid);
+      });
+    }
+
+    function scrollFilterToGroup(gid, smooth) {
+      const container = document.getElementById("filterOptions");
+      const sec = document.getElementById("fg-" + gid);
+      if (!container || !sec) return;
+      filterScrollSyncLock = true;
+      const top = Math.max(0, sec.offsetTop - 8);
+      if (smooth) container.scrollTo({ top, behavior: "smooth" });
+      else container.scrollTop = top;
+      window.setTimeout(() => { filterScrollSyncLock = false; }, smooth ? 400 : 0);
+    }
+
+    function syncFilterGroupFromScroll() {
+      if (filterScrollSyncLock) return;
+      const container = document.getElementById("filterOptions");
+      if (!container) return;
+      const sections = container.querySelectorAll(".filter-section");
+      const mid = container.scrollTop + container.clientHeight * 0.28;
+      let active = state.filterGroup;
+      sections.forEach((sec) => {
+        if (sec.offsetTop <= mid) active = sec.id.replace("fg-", "");
+      });
+      if (active !== state.filterGroup) {
+        state.filterGroup = active;
+        highlightFilterGroup(active);
+      }
+    }
+
+    function setupFilterSectionObserver() {
+      const container = document.getElementById("filterOptions");
+      if (!container) return;
+      if (filterSectionObserver) filterSectionObserver.disconnect();
+      filterSectionObserver = new IntersectionObserver(
+        (entries) => {
+          if (filterScrollSyncLock) return;
+          let best = null;
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            if (!best || e.intersectionRatio > best.ratio) {
+              best = { id: e.target.id.replace("fg-", ""), ratio: e.intersectionRatio };
+            }
+          });
+          if (best && best.id !== state.filterGroup) {
+            state.filterGroup = best.id;
+            highlightFilterGroup(best.id);
+          }
+        },
+        { root: container, rootMargin: "-8% 0px -55% 0px", threshold: [0, 0.15, 0.4, 0.75] }
+      );
+      container.querySelectorAll(".filter-section").forEach((sec) => filterSectionObserver.observe(sec));
+    }
+
+    function renderFilterOptions() {
+      const opts = document.getElementById("filterOptions");
+      const f = state.draftFilters || state.filters;
+      opts.innerHTML = FILTER_GROUPS.map((g) =>
+        `<section class="filter-section" id="fg-${g.id}"><h3>${g.label}</h3><div class="opts-row">${optsHtmlForGroup(g.id, f)}</div></section>`
+      ).join("");
+      opts.querySelectorAll(".opt").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const set = f[btn.dataset.g];
+          const v = btn.dataset.v;
+          if (set.has(v)) set.delete(v); else set.add(v);
+          btn.classList.toggle("on", set.has(v));
+          updateApplyLabel();
+        });
+      });
+      setupFilterSectionObserver();
+    }
+
+    function renderFilterGroups() {
+      const el = document.getElementById("filterGroups");
+      el.innerHTML = FILTER_GROUPS.map((g) => {
+        const on = g.id === state.filterGroup ? " on" : "";
+        return `<button type="button" class="${on.trim()}" data-g="${g.id}">${g.label}</button>`;
+      }).join("");
+      el.querySelectorAll("button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.filterGroup = btn.dataset.g;
+          highlightFilterGroup(state.filterGroup);
+          scrollFilterToGroup(state.filterGroup, true);
+        });
+      });
+    }
+
+    function updateApplyLabel() {
+      const f = state.draftFilters || state.filters;
+      const n = previewCount(f);
+      document.getElementById("applyFilters").textContent = `Показать ${n} лотов`;
+    }
+
+    function openFilterSheet(group) {
+      state.cartOpen = false;
+      const cartSheet = document.getElementById("cartSheet");
+      if (cartSheet) {
+        cartSheet.classList.remove("open");
+        cartSheet.setAttribute("aria-hidden", "true");
+      }
+      state.draftFilters = cloneFilters(state.filters);
+      if (group) state.filterGroup = group;
+      state.filterOpen = true;
+      document.getElementById("filterSheet").classList.add("open");
+      document.getElementById("filterSheet").setAttribute("aria-hidden", "false");
+      document.getElementById("overlay").classList.add("open");
+      renderFilterGroups();
+      renderFilterOptions();
+      updateApplyLabel();
+      requestAnimationFrame(() => scrollFilterToGroup(state.filterGroup, false));
+    }
+
+    function closeSheets() {
+      state.filterOpen = false;
+      state.sortOpen = false;
+      state.cartOpen = false;
+      state.draftFilters = null;
+      ["filterSheet", "sortSheet", "cartSheet"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.remove("open");
+        el.setAttribute("aria-hidden", "true");
+      });
+      document.getElementById("overlay").classList.remove("open");
+      document.getElementById("dropMenu").classList.remove("open");
+      closeBuySheet();
+      setDock("catalog");
+    }
+
+    function openSortSheet() {
+      closeSheets();
+      state.sortOpen = true;
+      document.getElementById("sortSheet").classList.add("open");
+      document.getElementById("sortSheet").setAttribute("aria-hidden", "false");
+      document.getElementById("overlay").classList.add("open");
+      renderSortList();
+    }
+
+    function renderSortList() {
+      const el = document.getElementById("sortList");
+      el.innerHTML = SORT_OPTIONS.map((o) => {
+        const on = o.id === state.sort ? " on" : "";
+        return `<button type="button" class="${on.trim()}" data-sort="${o.id}">${o.label}</button>`;
+      }).join("");
+      el.querySelectorAll("button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.sort = btn.dataset.sort;
+          closeSheets();
+          renderProducts();
+          updateChipStates();
+        });
+      });
+    }
+
+    function filterActiveCount() {
+      return state.filters.species.size + state.filters.country.size + state.filters.process.size + state.filters.qgrade.size;
+    }
+
+    function updateChipStates() {
+      document.querySelectorAll(".chip").forEach((chip) => {
+        const k = chip.dataset.chip;
+        chip.classList.remove("has-filter", "on");
+        if (k === "filters" && filterActiveCount()) chip.classList.add("has-filter");
+        if (k === "sort" && state.sort) chip.classList.add("has-filter");
+        if (k === "species" && state.filters.species.size) chip.classList.add("has-filter");
+        if (k === "country" && state.filters.country.size) chip.classList.add("has-filter");
+        if (k === "process" && state.filters.process.size) chip.classList.add("has-filter");
+        if (k === "qgrade" && state.filters.qgrade.size) chip.classList.add("has-filter");
+      });
+    }
+
+    function openCompactDrop(group, anchor) {
+      const menu = document.getElementById("dropMenu");
+      const f = state.filters;
+      let items = [];
+      if (group === "species") {
+        items = [
+          { id: "arabica", label: "Арабика" },
+          { id: "robusta", label: "Робуста" },
+          { id: "canephora", label: "Канефора" },
+        ].map((it) => ({ ...it, set: f.species }));
+      } else if (group === "country") {
+        items = uniqueVendors().map((v) => ({ id: v, label: v, set: f.country }));
+      } else if (group === "process") {
+        items = uniqueProcesses().map((v) => ({ id: v, label: v, set: f.process }));
+      } else if (group === "qgrade") {
+        items = Q_BUCKETS.map((b) => ({ id: b.id, label: b.label, set: f.qgrade }));
+      }
+      menu.innerHTML = items.slice(0, 12).map((it) =>
+        `<button type="button" data-v="${esc(it.id)}" data-g="${group}">${it.set.has(it.id) ? "✓ " : ""}${esc(it.label)}</button>`
+      ).join("") + `<button type="button" data-more="${group}">Все в фильтрах…</button>`;
+      const rect = anchor.getBoundingClientRect();
+      const phone = document.getElementById("phone").getBoundingClientRect();
+      menu.style.left = Math.min(rect.left - phone.left, phone.width - 180) + "px";
+      menu.style.top = rect.bottom - phone.top + 4 + "px";
+      menu.classList.add("open");
+      menu.querySelectorAll("button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (btn.dataset.more) {
+            menu.classList.remove("open");
+            openFilterSheet(btn.dataset.more);
+            return;
+          }
+          const set = f[btn.dataset.g];
+          const v = btn.dataset.v;
+          if (set.has(v)) set.delete(v); else set.add(v);
+          menu.classList.remove("open");
+          renderProducts();
+          updateChipStates();
+        });
+      });
+    }
+
+    function updateLayoutMetrics() {
+      const phone = document.getElementById("phone");
+      const stickyBar = document.getElementById("stickyBar");
+      const catalogRow = document.getElementById("catalogRow");
+      const phoneScroll = document.getElementById("phoneScroll");
+      const dock = phone ? phone.querySelector(".dock") : null;
+      if (!phone || !stickyBar || !catalogRow) return;
+      const barH = stickyBar.offsetHeight;
+      const scrollH = (phoneScroll ? phoneScroll.clientHeight : phone.clientHeight - (dock ? dock.offsetHeight : 0));
+      catalogRow.style.setProperty("--sticky-offset", barH + "px");
+      catalogRow.style.setProperty("--catalog-scroll-h", scrollH + "px");
+      updateChipsOverflow();
+    }
+
+    let chipsHintDone = false;
+    let chipsScrollGlowTimer = 0;
+    let chipsRowScrollTimer = 0;
+
+    function syncChipsMotionThumb() {
+      const wrap = document.getElementById("chipsWrap");
+      const row = document.getElementById("chipsRow");
+      const thumb = document.getElementById("chipsMotionThumb");
+      if (!wrap || !row || !thumb || wrap.classList.contains("hinting")) return;
+      const max = row.scrollWidth - row.clientWidth;
+      if (max <= 0) {
+        thumb.style.width = "34%";
+        thumb.style.transform = "translateX(0)";
+        return;
+      }
+      const thumbPct = Math.max(0.28, Math.min(0.55, row.clientWidth / row.scrollWidth));
+      const travel = (1 - thumbPct) * 100;
+      const ratio = row.scrollLeft / max;
+      thumb.style.width = `${thumbPct * 100}%`;
+      thumb.style.transform = `translateX(${(ratio * travel) / thumbPct}%)`;
+    }
+
+    function updateChipsOverflow() {
+      const wrap = document.getElementById("chipsWrap");
+      const row = document.getElementById("chipsRow");
+      if (!wrap || !row) return;
+      const max = row.scrollWidth - row.clientWidth;
+      const left = row.scrollLeft;
+      wrap.classList.toggle("can-left", left > 4);
+      wrap.classList.toggle("can-right", max > 6 && left < max - 4);
+      syncChipsMotionThumb();
+    }
+
+    function playChipsHint() {
+      if (chipsHintDone) return;
+      const wrap = document.getElementById("chipsWrap");
+      const row = document.getElementById("chipsRow");
+      const thumb = document.getElementById("chipsMotionThumb");
+      if (!wrap || !row) return;
+      if (row.scrollWidth <= row.clientWidth + 8) return;
+      chipsHintDone = true;
+      if (thumb) {
+        thumb.style.width = "34%";
+        thumb.style.transform = "";
+      }
+      wrap.classList.add("hinting");
+      row.classList.add("nudge");
+      const max = Math.min(56, row.scrollWidth - row.clientWidth);
+      row.scrollTo({ left: max, behavior: "smooth" });
+      setTimeout(() => {
+        row.scrollTo({ left: 0, behavior: "smooth" });
+        updateChipsOverflow();
+      }, 700);
+      setTimeout(() => {
+        row.classList.remove("nudge");
+        wrap.classList.remove("hinting");
+        updateChipsOverflow();
+      }, 1500);
+    }
+
+    function pulseChipsScrollGlow() {
+      const wrap = document.getElementById("chipsWrap");
+      if (!wrap) return;
+      wrap.classList.add("scroll-glow");
+      clearTimeout(chipsScrollGlowTimer);
+      chipsScrollGlowTimer = setTimeout(() => {
+        wrap.classList.remove("scroll-glow");
+      }, 520);
+    }
+
+    function watchChipsStickyHint() {
+      const phoneScroll = document.getElementById("phoneScroll");
+      const stickyBar = document.getElementById("stickyBar");
+      if (!phoneScroll || !stickyBar) return;
+      phoneScroll.addEventListener("scroll", pulseChipsScrollGlow, { passive: true });
+      const onStuck = () => {
+        const stuck = stickyBar.getBoundingClientRect().top <= phoneScroll.getBoundingClientRect().top + 1;
+        if (stuck) {
+          playChipsHint();
+          phoneScroll.removeEventListener("scroll", onStuck);
+        }
+      };
+      phoneScroll.addEventListener("scroll", onStuck, { passive: true });
+      setTimeout(playChipsHint, 1400);
+    }
+
+    const chipsRowEl = document.getElementById("chipsRow");
+    chipsRowEl.addEventListener("scroll", () => {
+      const wrap = document.getElementById("chipsWrap");
+      if (wrap) {
+        wrap.classList.add("is-scrolling");
+        clearTimeout(chipsRowScrollTimer);
+        chipsRowScrollTimer = setTimeout(() => wrap.classList.remove("is-scrolling"), 420);
+      }
+      updateChipsOverflow();
+    }, { passive: true });
+    /* Вертикальное колесо над фильтрами не должно «залипать» — прокидываем в каталог */
+    chipsRowEl.addEventListener("wheel", (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      const phoneScroll = document.getElementById("phoneScroll");
+      if (!phoneScroll) return;
+      phoneScroll.scrollTop += e.deltaY;
+      e.preventDefault();
+    }, { passive: false });
+    document.getElementById("chipsMore").addEventListener("click", () => {
+      const row = document.getElementById("chipsRow");
+      row.scrollBy({ left: Math.min(120, row.scrollWidth - row.clientWidth - row.scrollLeft), behavior: "smooth" });
+    });
+    document.getElementById("chipsBack").addEventListener("click", () => {
+      const row = document.getElementById("chipsRow");
+      row.scrollBy({ left: -Math.min(120, row.scrollLeft), behavior: "smooth" });
+    });
+
+    document.getElementById("chipsRow").addEventListener("click", (e) => {
+      const chip = e.target.closest(".chip");
+      if (!chip) return;
+      const k = chip.dataset.chip;
+      if (k === "filters") openFilterSheet("species");
+      else if (k === "sort") openSortSheet();
+      else openCompactDrop(k, chip);
+    });
+
+    document.getElementById("closeFilter").addEventListener("click", closeSheets);
+    document.getElementById("closeSort").addEventListener("click", closeSheets);
+    document.getElementById("closeCart").addEventListener("click", closeSheets);
+    document.getElementById("overlay").addEventListener("click", closeSheets);
+    document.getElementById("buySheet").addEventListener("click", (e) => {
+      if (e.target.id === "buyDim" || e.target.id === "buyClose") {
+        closeBuySheet();
+        return;
+      }
+      const add = e.target.closest("[data-buy-add]");
+      if (add) {
+        const p = findProduct(buyProductId);
+        if (!p) return;
+        buyQtyKg = snapKg(buyQtyKg + Number(add.dataset.buyAdd), p);
+        paintBuySum();
+        return;
+      }
+      if (e.target.id === "buyConfirm") {
+        const p = findProduct(buyProductId);
+        if (!p) return;
+        setCartKg(buyProductId, buyQtyKg);
+        closeBuySheet();
+        toast(p.inTransit ? "Лот в пути добавлен в заказ" : "Добавлено в заказ");
+        renderProducts();
+      }
+    });
+    document.getElementById("buySheet").addEventListener("change", (e) => {
+      if (e.target.id !== "buyKg") return;
+      const p = findProduct(buyProductId);
+      if (!p) return;
+      buyQtyKg = snapKg(e.target.value, p);
+      paintBuySum();
+    });
+    document.getElementById("cartCheckout").addEventListener("click", () => {
+      toast(cart.size ? "Оформление — как в приложении" : "Корзина пуста");
+    });
+    document.querySelectorAll(".dock button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const name = btn.dataset.dock;
+        if (name === "cart") {
+          closeBuySheet();
+          openCartSheet();
+          return;
+        }
+        closeSheets();
+        setDock(name);
+        if (name === "favorites") toast("Избранное — следующий шаг прототипа");
+        else if (name === "support") toast("Поддержка — как в приложении");
+        else if (name === "profile") toast("Профиль — как в приложении");
+      });
+    });
+    document.getElementById("resetFilters").addEventListener("click", () => {
+      state.draftFilters = { species: new Set(), country: new Set(), process: new Set(), qgrade: new Set() };
+      renderFilterOptions();
+      updateApplyLabel();
+    });
+    document.getElementById("applyFilters").addEventListener("click", () => {
+      if (state.draftFilters) state.filters = cloneFilters(state.draftFilters);
+      closeSheets();
+      renderProducts();
+      updateChipStates();
+    });
+
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+      state.search = e.target.value;
+      renderProducts();
+      if (state.filterOpen) updateApplyLabel();
+    });
+
+    document.getElementById("btnGrid").addEventListener("click", () => {
+      state.listView = false;
+      document.getElementById("btnGrid").classList.add("on");
+      document.getElementById("btnList").classList.remove("on");
+      renderProducts();
+    });
+    document.getElementById("btnList").addEventListener("click", () => {
+      state.listView = true;
+      document.getElementById("btnList").classList.add("on");
+      document.getElementById("btnGrid").classList.remove("on");
+      renderProducts();
+    });
+
+    document.getElementById("btnPdf").addEventListener("click", () => alert("PDF-прайс — ссылка в prod"));
+    document.getElementById("filterOptions").addEventListener("scroll", syncFilterGroupFromScroll, { passive: true });
+    window.addEventListener("resize", updateLayoutMetrics);
+
+    (async function init() {
+      await loadOffers();
+      renderSidebar();
+      renderProducts();
+      updateChipStates();
+      updateDockCartBadge();
+      updateLayoutMetrics();
+      watchChipsStickyHint();
+    })();
+  </script>
+</body>
+</html>
