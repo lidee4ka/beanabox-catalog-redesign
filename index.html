@@ -324,6 +324,9 @@
       align-items: flex-start;
       background: var(--bg);
       min-height: calc(var(--catalog-scroll-h, 680px) - var(--sticky-offset, 52px));
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
     }
     .brand {
       display: flex;
@@ -787,9 +790,14 @@
     .pic {
       position: relative; aspect-ratio: 1; background: #e5e9ec;
       overflow: hidden;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
     }
     .pic-track {
       display: flex;
+      width: 100%;
+      max-width: 100%;
       height: 100%;
       overflow-x: auto;
       overflow-y: hidden;
@@ -802,6 +810,8 @@
     .pic-slide {
       flex: 0 0 100%;
       width: 100%;
+      min-width: 100%;
+      max-width: 100%;
       height: 100%;
       scroll-snap-align: start;
       scroll-snap-stop: always;
@@ -1263,12 +1273,50 @@
       .deck .cmp-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 820px) {
-      .wrap { padding: 0; gap: 0; max-width: none; }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      .wrap {
+        padding: 0;
+        gap: 0;
+        max-width: none;
+        width: 100%;
+        min-height: 100dvh;
+        height: 100dvh;
+        margin: 0;
+        align-items: stretch;
+        justify-content: stretch;
+      }
       .deck { display: none !important; }
-      .stage { background: transparent; padding: 0; border-radius: 0; box-shadow: none; position: static; }
+      .stage {
+        background: transparent;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+        position: static;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        flex: 1 1 auto;
+      }
       .phone {
-        width: 100%; height: 100dvh; max-height: 100dvh;
-        border-radius: 0; box-shadow: none;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        height: 100dvh;
+        max-height: 100dvh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .catalog-row,
+      .products-pane,
+      .catalog-feed,
+      .product-grid {
+        min-width: 0;
+        max-width: 100%;
       }
     }
   </style>
@@ -1510,45 +1558,6 @@
 
   <script>
     const EMBEDDED_OFFERS = [
-  {
-    "id": "151",
-    "name": "Arabica Brazil Arara Grainpro",
-    "vendor": "Бразилия",
-    "price_rub": 1265.95,
-    "usd": 13.3,
-    "picture": "https://panel.app.beanabox.ru/uploads/Arabica_Brazil_Arara_grainpro_02_ad97894514.jpg",
-    "q_grade": "83.5",
-    "process": null,
-    "categoryId": 1,
-    "remainder": 47,
-    "bouquet": "желтые фрукты, какао, жаренный орех, отдаленно цветы"
-  },
-  {
-    "id": "156",
-    "name": "Arabica Colombia Castillo Diofanor Ruiz Natural grainpro INFUSE",
-    "vendor": "Колумбия",
-    "price_rub": 1941.13,
-    "usd": 20.39,
-    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_17_23_16_23_43477cec5d.jpg",
-    "q_grade": "86.25",
-    "process": "INFUSE, Натуральная",
-    "categoryId": 1,
-    "remainder": 110,
-    "bouquet": "лесные ягоды, мармелад, апельсин, цветы"
-  },
-  {
-    "id": "159",
-    "name": "Arabica Ethiopia gr 1 Yirgacheffe Chelelektu grainpro washed",
-    "vendor": "Эфиопия",
-    "price_rub": 1687.94,
-    "usd": 17.73,
-    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_17_23_33_50_b8aefa1eb3.jpg",
-    "q_grade": null,
-    "process": "Мытая",
-    "categoryId": 1,
-    "remainder": 360,
-    "bouquet": "акация, абрикос, специи, персик, сухофрукты"
-  },
   {
     "id": "50",
     "name": "Robusta Uganda DHP 18 scr",
@@ -2161,6 +2170,110 @@
     "bouquet": "молочный шоколад, вишня, лайм, желтая слива, маракуя"
   },
   {
+    "id": "116",
+    "name": "Arabica Colombia Bourbon Aji Collazos washed",
+    "vendor": "Колумбия",
+    "price_rub": 3966.65,
+    "usd": 41.67,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_24_17_47_09_8f48eec228.jpg",
+    "q_grade": "86.25",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 144,
+    "bouquet": "клюква, миндаль, зеленое яблоко, калина"
+  },
+  {
+    "id": "117",
+    "name": "Arabica Colombia Pink Bourbon Satus washed Mr.Smith",
+    "vendor": "Колумбия",
+    "price_rub": 3038.29,
+    "usd": 31.91,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_24_17_51_32_2b159fa2cf.jpg",
+    "q_grade": "85",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 168,
+    "bouquet": "лимонник, фруктовые леденцы, красная смородина"
+  },
+  {
+    "id": "118",
+    "name": "Arabica Colombia Bourbon Aji Santa Ana washed",
+    "vendor": "Колумбия",
+    "price_rub": 3629.07,
+    "usd": 38.12,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_24_17_54_41_5ec95ef002.jpg",
+    "q_grade": "85.75",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 144,
+    "bouquet": "брусника, темный шоколад, яблочный сидр, вишневые косточки, груша"
+  },
+  {
+    "id": "119",
+    "name": "Arabica Colombia Gesha La Union washed LC",
+    "vendor": "Колумбия",
+    "price_rub": 3629.07,
+    "usd": 38.12,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_24_17_58_37_9b4905aaf0.jpg",
+    "q_grade": "85.75",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 144,
+    "bouquet": "жасмин, апельсин, черный чай, бергамот, карамель"
+  },
+  {
+    "id": "120",
+    "name": "Arabica Colombia Bourbon Aji Satus washed BS",
+    "vendor": "Колумбия",
+    "price_rub": 3291.48,
+    "usd": 34.57,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_24_18_02_54_7eac519c9d.jpg",
+    "q_grade": "86",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 144,
+    "bouquet": "абрикос, ежевика, апельсин, красные ягоды, темный шоколад"
+  },
+  {
+    "id": "124",
+    "name": "Arabica India Monsooned Malabar AA",
+    "vendor": "Индия",
+    "price_rub": 1308.15,
+    "usd": 13.74,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_01_30_16_42_52_19bfdacfcf.jpg",
+    "q_grade": "80.25",
+    "process": "Monsooned",
+    "categoryId": 1,
+    "remainder": 150,
+    "bouquet": "табак, дерево, зеленое яблоко, сухофруткы"
+  },
+  {
+    "id": "125",
+    "name": "Arabica Mexico Chiapas SHG Washed",
+    "vendor": "Мексика",
+    "price_rub": 995.88,
+    "usd": 10.46,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_01_30_17_06_41_89c05affa7.jpg",
+    "q_grade": "3",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 600,
+    "bouquet": "жареный орех, желтые фрукты, карамель"
+  },
+  {
+    "id": "126",
+    "name": "Arabica China Simao gr 16+ washed",
+    "vendor": "Китай",
+    "price_rub": 1012.76,
+    "usd": 10.64,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_01_30_17_29_54_c0804c4af5.jpg",
+    "q_grade": "82.25",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 237,
+    "bouquet": "черный чай, красные ягоды, сухофрукты"
+  },
+  {
     "id": "127",
     "name": "Robusta Canephora Uganda DHP scr 18",
     "vendor": "Уганда",
@@ -2213,8 +2326,60 @@
     "bouquet": null
   },
   {
+    "id": "131",
+    "name": "Arabica Ethiopia Uraga gr 1 natural",
+    "vendor": "Эфиопия",
+    "price_rub": 2109.92,
+    "usd": 22.16,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_03_05_23_07_41_c593c7dda8.jpg",
+    "q_grade": "85",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 20,
+    "bouquet": "финики, кешью, белые цветы"
+  },
+  {
+    "id": "135",
+    "name": "Arabica Ethiopia Sidamo Gr. 2 Guji Grainpro Washed",
+    "vendor": "Эфиопия",
+    "price_rub": 1164.68,
+    "usd": 12.23,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_05_19_18_39_30_87170207e5.jpg",
+    "q_grade": "83.5",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 344,
+    "bouquet": "цветы, молочный шоколад, цитрус"
+  },
+  {
+    "id": "137",
+    "name": "Arabica Tanzania AA",
+    "vendor": "Танзания",
+    "price_rub": 1139.36,
+    "usd": 11.97,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_05_19_18_45_24_8e13d240d0.jpg",
+    "q_grade": "82.75",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 179,
+    "bouquet": "черный чай, красные ягоды, дерево, сухофрукты"
+  },
+  {
+    "id": "139",
+    "name": "Arabica Costa Rica SHB EP Tarrazu washed",
+    "vendor": "Коста-Рика",
+    "price_rub": 1181.56,
+    "usd": 12.41,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_06_04_18_57_19_032c7b1e53.jpg",
+    "q_grade": "82.5",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 103,
+    "bouquet": "желтые фрукты, дерево, жаренный орех, молочный шоколад"
+  },
+  {
     "id": "143",
-    "name": "Robusta Vietnam wet polished 1gr scr16",
+    "name": "Robusta Vietnam wet polished 1gr scr16 🔴 МСК",
     "vendor": "Вьетнам",
     "price_rub": 531.7,
     "usd": 5.59,
@@ -2224,6 +2389,201 @@
     "categoryId": 2,
     "remainder": 4060,
     "bouquet": null
+  },
+  {
+    "id": "148",
+    "name": "Arabica Brazil Santos NY2/3 scr 14/16 FC ⚪️ СПб",
+    "vendor": "Бразилия",
+    "price_rub": 810.21,
+    "usd": 8.51,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_10_16_42_01_a587f4339c.jpg",
+    "q_grade": "81.75",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 19200,
+    "bouquet": "карамель, какао, жаренные орехи"
+  },
+  {
+    "id": "150",
+    "name": "Robusta Canephora Uganda DHP scr 17",
+    "vendor": "Уганда",
+    "price_rub": 607.66,
+    "usd": 6.38,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_02_05_23_55_18_b01d2c5406.jpg",
+    "q_grade": null,
+    "process": "Натуральная",
+    "categoryId": 2,
+    "remainder": 9700,
+    "bouquet": "дерево, молочный шоколад, грецкий орех"
+  },
+  {
+    "id": "151",
+    "name": "Arabica Brazil Arara Grainpro",
+    "vendor": "Бразилия",
+    "price_rub": 1265.95,
+    "usd": 13.3,
+    "picture": "https://panel.app.beanabox.ru/uploads/Arabica_Brazil_Arara_grainpro_02_ad97894514.jpg",
+    "q_grade": "83.5",
+    "process": null,
+    "categoryId": 1,
+    "remainder": 47,
+    "bouquet": "желтые фрукты, какао, жаренный орех, отдаленно цветы"
+  },
+  {
+    "id": "152",
+    "name": "Arabica Brazil Danilo Barbosa Natural Fermented",
+    "vendor": "Бразилия",
+    "price_rub": 2531.91,
+    "usd": 26.6,
+    "picture": "https://panel.app.beanabox.ru/uploads/Arabica_Brazil_Danilo_Barbosa_Natural_Fermented_01_985d3b8bce.jpg",
+    "q_grade": "86.75",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 198,
+    "bouquet": "грецкий орех, апельсин, ликер, изюм, темный шоколад"
+  },
+  {
+    "id": "153",
+    "name": "Arabica Brazil Santuario Sul Sudan Rume",
+    "vendor": "Бразилия",
+    "price_rub": 2363.11,
+    "usd": 24.82,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_17_22_44_55_f75240faa5.jpg",
+    "q_grade": "86",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 180,
+    "bouquet": "виноград, темные ягоды, ликер, темный шоколад"
+  },
+  {
+    "id": "154",
+    "name": "Arabica Burundi Burasira Fully Washed 15+",
+    "vendor": "Бурунди",
+    "price_rub": 1223.76,
+    "usd": 12.85,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_17_23_02_21_4ff5114644.jpg",
+    "q_grade": "84.25",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 287,
+    "bouquet": "малина, светлая карамель, цитрус"
+  },
+  {
+    "id": "155",
+    "name": "Arabica China Xingan Anaerobic Natural",
+    "vendor": "Китай",
+    "price_rub": 2109.92,
+    "usd": 22.16,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_17_23_12_01_d27b97ef3e.jpg",
+    "q_grade": "86.5",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 114,
+    "bouquet": "ром, апельсин, виноград темный, тропические фрукты"
+  },
+  {
+    "id": "156",
+    "name": "Arabica Colombia Castillo Diofanor Ruiz Natural grainpro INFUSE",
+    "vendor": "Колумбия",
+    "price_rub": 1941.13,
+    "usd": 20.39,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_17_23_16_23_43477cec5d.jpg",
+    "q_grade": "86.25",
+    "process": "INFUSE, Натуральная",
+    "categoryId": 1,
+    "remainder": 110,
+    "bouquet": "лесные ягоды, мармелад, апельсин, цветы"
+  },
+  {
+    "id": "157",
+    "name": "Arabica Ethiopia Guji gr 1 Adola anaerobic natural",
+    "vendor": "Эфиопия",
+    "price_rub": 1687.94,
+    "usd": 17.73,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_17_23_21_04_007d23cf66.jpg",
+    "q_grade": "86",
+    "process": "Анаэробная (ферментация), Натуральная",
+    "categoryId": 1,
+    "remainder": 178,
+    "bouquet": "выпечка, жердела, малиновое варенье, черный чай, апельсин"
+  },
+  {
+    "id": "158",
+    "name": "Arabica Ethiopia Sidamo gr 3 Natural",
+    "vendor": "Эфиопия",
+    "price_rub": 1054.96,
+    "usd": 11.08,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_17_23_29_37_40bb5e7af7.jpg",
+    "q_grade": "82.5",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 1685,
+    "bouquet": "карамель, цитрусы, сухофрукты, черный чай"
+  },
+  {
+    "id": "159",
+    "name": "Arabica Ethiopia gr 1 Yirgacheffe Chelelektu grainpro washed",
+    "vendor": "Эфиопия",
+    "price_rub": 1687.94,
+    "usd": 17.73,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_17_23_33_50_b8aefa1eb3.jpg",
+    "q_grade": null,
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 360,
+    "bouquet": "акация, абрикос, специи, персик, сухофрукты"
+  },
+  {
+    "id": "161",
+    "name": "Arabica Kenya AA washed",
+    "vendor": "Кения",
+    "price_rub": 1434.75,
+    "usd": 15.07,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_23_13_17_44_17ce9ae9a5.jpg",
+    "q_grade": "83.25",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 479,
+    "bouquet": "чай, красные ягоды, сухофрукты, карамель"
+  },
+  {
+    "id": "162",
+    "name": "Arabica Indonesia Sumatra Gayo Belangi",
+    "vendor": "Индонезия",
+    "price_rub": 1181.56,
+    "usd": 12.41,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_23_13_21_16_d8057b7d59.jpg",
+    "q_grade": "83",
+    "process": null,
+    "categoryId": 1,
+    "remainder": 144,
+    "bouquet": "Красные ягоды, какао, карамель"
+  },
+  {
+    "id": "163",
+    "name": "Arabica Rwanda Gisanga Hill Red Bourbon Anaerobic",
+    "vendor": "Руанда",
+    "price_rub": 2025.53,
+    "usd": 21.28,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_23_13_28_45_7be2105e6b.jpg",
+    "q_grade": "86.25",
+    "process": "Анаэробная (ферментация)",
+    "categoryId": 1,
+    "remainder": 236,
+    "bouquet": "апельсин, тропические фрукты, молочный шоколад, красное вино"
+  },
+  {
+    "id": "164",
+    "name": "Arabica India AA Plantation 🔴 МСК",
+    "vendor": "Индия",
+    "price_rub": 953.68,
+    "usd": 10.02,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_23_13_37_00_a9bee3b61e.jpg",
+    "q_grade": "81.25",
+    "process": null,
+    "categoryId": 1,
+    "remainder": 15000,
+    "bouquet": "дерево, жареный орех, сухофрукты"
   },
   {
     "id": "165",
@@ -2239,8 +2599,60 @@
     "bouquet": "дерево, молочный шоколад, грецкий орех"
   },
   {
+    "id": "166",
+    "name": "Arabica India AA Plantation 🔴 МСК  📦BOX, 15000 кг",
+    "vendor": "Индия",
+    "price_rub": 759.57,
+    "usd": 7.98,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_23_13_37_00_a9bee3b61e.jpg",
+    "q_grade": "81.25",
+    "process": null,
+    "categoryId": 1,
+    "remainder": 15000,
+    "bouquet": "дерево, жареный орех, сухофрукты"
+  },
+  {
+    "id": "169",
+    "name": "Arabica India Cherry Peaberry 🟢 Новороссийск 📦BOX, 19200 кг",
+    "vendor": "Индия",
+    "price_rub": 768.01,
+    "usd": 8.07,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_09_03_22_20_39_03ad24649f.jpg",
+    "q_grade": "80",
+    "process": null,
+    "categoryId": 1,
+    "remainder": 19200,
+    "bouquet": null
+  },
+  {
+    "id": "170",
+    "name": "Arabica Brazil Cerrado NY 2 scr 17/18 FC",
+    "vendor": "Бразилия",
+    "price_rub": 936.81,
+    "usd": 9.84,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_09_12_00_39_45_0463226271.jpg",
+    "q_grade": "83",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 20000,
+    "bouquet": "желтые фрукты, карамель, жареный фундук, какао"
+  },
+  {
+    "id": "171",
+    "name": "Arabica Venezuela Lara washed gr 1 🔴 МСК",
+    "vendor": "Венесуэла",
+    "price_rub": 979.0,
+    "usd": 10.28,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_09_14_16_42_24_39d7e4e481.jpg",
+    "q_grade": "82.5",
+    "process": "Мытая",
+    "categoryId": 1,
+    "remainder": 100000,
+    "bouquet": "сухофрукты, яблоко, шоколад"
+  },
+  {
     "id": "172",
-    "name": "Robusta Canephora Vietnam wet polished 1gr scr16",
+    "name": "Robusta Canephora Vietnam wet polished 1gr scr16 ⚪️ СПб",
     "vendor": "Вьетнам",
     "price_rub": 506.38,
     "usd": 5.32,
@@ -2250,6 +2662,32 @@
     "categoryId": 2,
     "remainder": 19200,
     "bouquet": "жженый сахар"
+  },
+  {
+    "id": "173",
+    "name": "Robusta Canephora Vietnam wet polished 1gr scr16 🔴 МСК",
+    "vendor": "Вьетнам",
+    "price_rub": 506.38,
+    "usd": 5.32,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_12_17_35_50_0b67f7f3e4.jpg",
+    "q_grade": null,
+    "process": "Влажная полировка",
+    "categoryId": 2,
+    "remainder": 7000,
+    "bouquet": "жженый сахар"
+  },
+  {
+    "id": "174",
+    "name": "Arabica Brazil Santos 17/18 FC 🔴 МСК · 10 т одним чеком",
+    "vendor": "Бразилия",
+    "price_rub": 818.65,
+    "usd": 8.6,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_11_26_12_54_10_e2c99cfbe6_891e48fac7.jpg",
+    "q_grade": "81.75",
+    "process": "Натуральная",
+    "categoryId": 1,
+    "remainder": 10000,
+    "bouquet": "сухофрукты, жаренный орех, какао"
   }
 ];
 
