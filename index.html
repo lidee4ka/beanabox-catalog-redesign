@@ -297,7 +297,7 @@
     }
     .chip {
       flex: none; border: 1px solid var(--line); background: #fff;
-      border-radius: 999px; padding: 6px 10px 6px 12px;
+      border-radius: 12px; padding: 6px 10px 6px 12px;
       font: inherit; font-size: 13px; font-weight: 500; color: var(--ink);
       cursor: pointer; white-space: nowrap;
       display: inline-flex; align-items: center; gap: 6px;
@@ -305,8 +305,136 @@
     }
     .chip .chip-icon { flex: none; width: 15px; height: 15px; color: var(--mute); }
     .chip .chip-chevron { flex: none; width: 12px; height: 12px; color: var(--mute); opacity: .88; }
-    .chip.on { border-color: var(--green); color: var(--green-d); background: rgba(61,190,74,.06); }
-    .chip.has-filter { border-color: var(--green); box-shadow: inset 0 0 0 1px var(--green); }
+    .chip.on { border-color: var(--blue); color: var(--blue); background: rgba(44, 82, 190, .08); }
+    .chip.has-filter { border-color: var(--blue); color: var(--blue); background: rgba(44, 82, 190, .1); }
+    .chip.open {
+      background: var(--blue); color: #fff; border-color: var(--blue);
+    }
+    .chip.open .chip-icon,
+    .chip.open .chip-chevron { color: #fff; }
+    .chip.open.has-filter { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .chip .chip-chevron { transition: transform .2s ease; }
+    .chip.open .chip-chevron { transform: rotate(180deg); }
+    .chip-badge {
+      min-width: 16px; height: 16px; padding: 0 4px; border-radius: 99px;
+      background: var(--blue); color: #fff; font-size: 10px; font-weight: 700;
+      display: inline-grid; place-items: center; line-height: 1;
+    }
+    .chip.open .chip-badge { background: #fff; color: var(--blue); }
+
+    .facet-pop {
+      position: absolute;
+      left: 0; right: 0;
+      z-index: 28;
+      display: none;
+      flex-direction: column;
+    }
+    .facet-pop.open { display: flex; }
+    .facet-panel {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      max-height: 72%;
+      border-radius: 0 0 12px 12px;
+      overflow: hidden;
+      box-shadow: 0 14px 28px rgba(17,19,24,.12);
+    }
+    .facet-scroll {
+      overflow-y: auto;
+      padding: 14px 14px 6px;
+      min-height: 0;
+      text-align: left;
+      -webkit-overflow-scrolling: touch;
+    }
+    .facet-title {
+      margin: 0 0 10px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+      text-align: left;
+    }
+    .facet-scroll .opts-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
+    .facet-scroll .opt,
+    .facet-scroll .filter-section h3,
+    .facet-split .filter-groups button {
+      text-align: left;
+      justify-content: flex-start;
+    }
+    .facet-scroll .opt.on {
+      border-color: var(--blue);
+      background: rgba(44, 82, 190, .1);
+      color: var(--blue);
+    }
+    .facet-split {
+      display: flex;
+      min-height: 240px;
+      max-height: 420px;
+    }
+    .facet-split .filter-groups button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .fg-n {
+      flex: none;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 99px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 18px;
+      text-align: center;
+    }
+    .facet-split .filter-groups button.on .fg-n { background: var(--blue); }
+    .facet-split .filter-groups button.on { border-left-color: var(--blue); color: var(--blue); }
+    .facet-split .filter-options { padding: 8px 12px 4px; }
+    .sort-opt {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; text-align: left; border: 0; background: #fff;
+      padding: 16px 4px; font: inherit; font-size: 15px; font-weight: 500;
+      cursor: pointer; border-bottom: 1px solid var(--line); color: var(--ink);
+    }
+    .sort-opt.on { font-weight: 600; color: var(--blue); }
+    .sort-opt .tick { color: var(--blue); font-weight: 700; }
+    .facet-foot {
+      display: flex; gap: 10px;
+      padding: 10px 14px 14px;
+      background: #fff;
+      border-top: 1px solid var(--line);
+    }
+    .facet-foot button {
+      flex: 1;
+      border-radius: 12px;
+      padding: 14px;
+      font: inherit;
+      font-size: 15px;
+      cursor: pointer;
+      min-height: 48px;
+    }
+    .facet-foot .btn-reset {
+      border: 1px solid var(--line);
+      background: #fff;
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .facet-foot .btn-apply {
+      border: 0;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 600;
+    }
+    .facet-dim {
+      flex: 1;
+      min-height: 40px;
+      border: 0;
+      padding: 0;
+      background: rgba(17,19,24,.48);
+      cursor: pointer;
+    }
 
     .sidebar {
       width: var(--rail-w);
@@ -827,7 +955,7 @@
     .filter-section h3 { font-size: 15px; font-weight: 600; margin: 0 0 10px; color: var(--ink); }
     .filter-section .opts-row { display: flex; flex-wrap: wrap; gap: 8px; }
     .opt {
-      border: 1px solid var(--line); background: #fff; border-radius: 999px;
+      border: 1px solid var(--line); background: #fff; border-radius: 12px;
       padding: 10px 14px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer;
       min-height: 40px;
     }
@@ -1060,7 +1188,16 @@
         <div class="buy-dim" id="buyDim"></div>
         <div class="buy-card" id="buyCard"></div>
       </div>
-      <div class="drop-menu" id="dropMenu"></div>
+      <div class="facet-pop" id="facetPop" hidden>
+        <div class="facet-panel" id="facetPanel">
+          <div class="facet-scroll" id="facetScroll"></div>
+          <div class="facet-foot" id="facetFoot">
+            <button type="button" class="btn-reset" id="facetReset">Сбросить</button>
+            <button type="button" class="btn-apply" id="facetApply">Показать</button>
+          </div>
+        </div>
+        <button type="button" class="facet-dim" id="facetDim" aria-label="Закрыть фильтр"></button>
+      </div>
     </div>
   </div>
 
@@ -1715,6 +1852,97 @@
     "categoryId": 1,
     "remainder": 94,
     "bouquet": "молочный шоколад, вишня, лайм, желтая слива, маракуя"
+  },
+  {
+    "id": "127",
+    "name": "Robusta Canephora Uganda DHP scr 18",
+    "vendor": "Уганда",
+    "price_rub": 632.98,
+    "usd": 6.65,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_02_05_23_55_18_b01d2c5406.jpg",
+    "q_grade": null,
+    "process": "Натуральная",
+    "categoryId": 2,
+    "remainder": 7000,
+    "bouquet": "дерево, молочный шоколад, грецкий орех"
+  },
+  {
+    "id": "128",
+    "name": "Robusta Vietnam SCREEN 18 CLEAN",
+    "vendor": "Вьетнам",
+    "price_rub": 557.02,
+    "usd": 5.85,
+    "picture": "https://panel.app.beanabox.ru/uploads/Robusta_Vietnam_S18_0b908e4697.jpeg",
+    "q_grade": null,
+    "process": "Высокая очистка",
+    "categoryId": 2,
+    "remainder": 11640,
+    "bouquet": null
+  },
+  {
+    "id": "129",
+    "name": "Robusta Vietnam 18 Blue Tiger (blue dragon)",
+    "vendor": "Вьетнам",
+    "price_rub": 582.34,
+    "usd": 6.12,
+    "picture": "https://panel.app.beanabox.ru/uploads/Blue_tiger_4bea5b080d.jpg",
+    "q_grade": null,
+    "process": null,
+    "categoryId": 2,
+    "remainder": 3644,
+    "bouquet": null
+  },
+  {
+    "id": "130",
+    "name": "Robusta Vietnam SCREEN 16 CLEAN",
+    "vendor": "Вьетнам",
+    "price_rub": 548.58,
+    "usd": 5.76,
+    "picture": "https://panel.app.beanabox.ru/uploads/Robusta_Vietnam_S16_9f54e37c49.jpeg",
+    "q_grade": null,
+    "process": "Высокая очистка",
+    "categoryId": 2,
+    "remainder": 4020,
+    "bouquet": null
+  },
+  {
+    "id": "143",
+    "name": "Robusta Vietnam wet polished 1gr scr16",
+    "vendor": "Вьетнам",
+    "price_rub": 531.7,
+    "usd": 5.59,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_12_17_35_50_0b67f7f3e4.jpg",
+    "q_grade": null,
+    "process": "Влажная полировка",
+    "categoryId": 2,
+    "remainder": 4060,
+    "bouquet": null
+  },
+  {
+    "id": "165",
+    "name": "Robusta Canephora Uganda scr 17",
+    "vendor": "Уганда",
+    "price_rub": 607.66,
+    "usd": 6.38,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2026_07_23_13_48_21_1bc7c4d52f.jpg",
+    "q_grade": null,
+    "process": null,
+    "categoryId": 2,
+    "remainder": 19140,
+    "bouquet": "дерево, молочный шоколад, грецкий орех"
+  },
+  {
+    "id": "172",
+    "name": "Robusta Canephora Vietnam wet polished 1gr scr16",
+    "vendor": "Вьетнам",
+    "price_rub": 506.38,
+    "usd": 5.32,
+    "picture": "https://panel.app.beanabox.ru/uploads/photo_2025_12_12_17_35_50_0b67f7f3e4.jpg",
+    "q_grade": null,
+    "process": "Влажная полировка",
+    "categoryId": 2,
+    "remainder": 19200,
+    "bouquet": "жженый сахар"
   }
 ];
 
@@ -1812,6 +2040,7 @@
       filterOpen: false,
       cartOpen: false,
       buyOpen: false,
+      facetOpen: null,
     };
 
     function parseQ(v) {
@@ -2336,7 +2565,7 @@
       state.draftFilters = null;
       document.getElementById("filterSheet").classList.remove("open");
       document.getElementById("sortSheet").classList.remove("open");
-      document.getElementById("dropMenu").classList.remove("open");
+      closeFacet(false);
       state.cartOpen = true;
       const sheet = document.getElementById("cartSheet");
       const overlay = document.getElementById("overlay");
@@ -2730,8 +2959,8 @@
         el.setAttribute("aria-hidden", "true");
       });
       document.getElementById("overlay").classList.remove("open");
-      document.getElementById("dropMenu").classList.remove("open");
       closeBuySheet();
+      closeFacet(false);
       setDock("catalog");
     }
 
@@ -2764,59 +2993,184 @@
       return state.filters.species.size + state.filters.country.size + state.filters.process.size + state.filters.qgrade.size;
     }
 
+    function setChipBadge(chip, n) {
+      let b = chip.querySelector(".chip-badge");
+      if (!n) {
+        if (b) b.remove();
+        return;
+      }
+      if (!b) {
+        b = document.createElement("span");
+        b.className = "chip-badge";
+        const chev = chip.querySelector(".chip-chevron");
+        chip.insertBefore(b, chev || null);
+      }
+      b.textContent = String(n);
+    }
+
     function updateChipStates() {
       document.querySelectorAll(".chip").forEach((chip) => {
         const k = chip.dataset.chip;
-        chip.classList.remove("has-filter", "on");
-        if (k === "filters" && filterActiveCount()) chip.classList.add("has-filter");
-        if (k === "sort" && state.sort) chip.classList.add("has-filter");
-        if (k === "species" && state.filters.species.size) chip.classList.add("has-filter");
-        if (k === "country" && state.filters.country.size) chip.classList.add("has-filter");
-        if (k === "process" && state.filters.process.size) chip.classList.add("has-filter");
-        if (k === "qgrade" && state.filters.qgrade.size) chip.classList.add("has-filter");
+        chip.classList.remove("has-filter", "on", "open");
+        let n = 0;
+        if (k === "filters") n = filterActiveCount();
+        else if (k === "sort") n = state.sort ? 1 : 0;
+        else if (k === "species") n = state.filters.species.size;
+        else if (k === "country") n = state.filters.country.size;
+        else if (k === "process") n = state.filters.process.size;
+        else if (k === "qgrade") n = state.filters.qgrade.size;
+        if (n) chip.classList.add("has-filter");
+        if (state.facetOpen === k) chip.classList.add("open");
+        setChipBadge(chip, k === "sort" ? 0 : n);
       });
     }
 
-    function openCompactDrop(group, anchor) {
-      const menu = document.getElementById("dropMenu");
-      const f = state.filters;
-      let items = [];
-      if (group === "species") {
-        items = [
-          { id: "arabica", label: "Арабика" },
-          { id: "robusta", label: "Робуста" },
-          { id: "canephora", label: "Канефора" },
-        ].map((it) => ({ ...it, set: f.species }));
-      } else if (group === "country") {
-        items = uniqueVendors().map((v) => ({ id: v, label: v, set: f.country }));
-      } else if (group === "process") {
-        items = uniqueProcesses().map((v) => ({ id: v, label: v, set: f.process }));
-      } else if (group === "qgrade") {
-        items = Q_BUCKETS.map((b) => ({ id: b.id, label: b.label, set: f.qgrade }));
-      }
-      menu.innerHTML = items.slice(0, 12).map((it) =>
-        `<button type="button" data-v="${esc(it.id)}" data-g="${group}">${it.set.has(it.id) ? "✓ " : ""}${esc(it.label)}</button>`
-      ).join("") + `<button type="button" data-more="${group}">Все в фильтрах…</button>`;
-      const rect = anchor.getBoundingClientRect();
-      const phone = document.getElementById("phone").getBoundingClientRect();
-      menu.style.left = Math.min(rect.left - phone.left, phone.width - 180) + "px";
-      menu.style.top = rect.bottom - phone.top + 4 + "px";
-      menu.classList.add("open");
-      menu.querySelectorAll("button").forEach((btn) => {
+    function placeFacetPop() {
+      const phone = document.getElementById("phone");
+      const chips = document.getElementById("chipsWrap");
+      const pop = document.getElementById("facetPop");
+      const dock = phone ? phone.querySelector(".dock") : null;
+      if (!phone || !chips || !pop) return;
+      const phoneBox = phone.getBoundingClientRect();
+      const top = chips.getBoundingClientRect().bottom - phoneBox.top;
+      const bottom = dock ? dock.offsetHeight : 0;
+      pop.style.top = Math.max(0, top) + "px";
+      pop.style.bottom = bottom + "px";
+    }
+
+    function bindFacetOpts(root, f) {
+      root.querySelectorAll(".opt").forEach((btn) => {
         btn.addEventListener("click", () => {
-          if (btn.dataset.more) {
-            menu.classList.remove("open");
-            openFilterSheet(btn.dataset.more);
-            return;
-          }
           const set = f[btn.dataset.g];
           const v = btn.dataset.v;
           if (set.has(v)) set.delete(v); else set.add(v);
-          menu.classList.remove("open");
-          renderProducts();
-          updateChipStates();
+          btn.classList.toggle("on", set.has(v));
+          updateFacetApply();
+          refreshFacetGroupCounts();
         });
       });
+    }
+
+    function refreshFacetGroupCounts() {
+      const groups = document.getElementById("facetGroups");
+      const f = state.draftFilters || state.filters;
+      if (!groups || !f) return;
+      groups.querySelectorAll("button").forEach((btn) => {
+        const n = f[btn.dataset.g] ? f[btn.dataset.g].size : 0;
+        let badge = btn.querySelector(".fg-n");
+        if (!n) {
+          if (badge) badge.remove();
+          return;
+        }
+        if (!badge) {
+          badge = document.createElement("span");
+          badge.className = "fg-n";
+          btn.appendChild(badge);
+        }
+        badge.textContent = String(n);
+      });
+    }
+
+    function updateFacetApply() {
+      const btn = document.getElementById("facetApply");
+      if (!btn) return;
+      const f = state.draftFilters || state.filters;
+      btn.textContent = `Показать ${previewCount(f)}`;
+    }
+
+    function renderFacet(kind) {
+      const scroll = document.getElementById("facetScroll");
+      const foot = document.getElementById("facetFoot");
+      if (!scroll) return;
+      if (foot) foot.hidden = kind === "sort";
+      if (kind === "sort") {
+        scroll.innerHTML = SORT_OPTIONS.map((o) => {
+          const on = o.id === state.sort ? " on" : "";
+          const tick = o.id === state.sort ? `<span class="tick">✓</span>` : `<span class="tick"></span>`;
+          return `<button type="button" class="sort-opt${on}" data-sort="${o.id}">${esc(o.label)}${tick}</button>`;
+        }).join("");
+        scroll.querySelectorAll(".sort-opt").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            state.sort = btn.dataset.sort;
+            closeFacet(false);
+            renderProducts();
+            updateChipStates();
+          });
+        });
+        return;
+      }
+      const f = state.draftFilters || state.filters;
+      if (kind === "filters") {
+        scroll.innerHTML = `<div class="facet-split"><div class="filter-groups" id="facetGroups"></div><div class="filter-options" id="facetOpts"></div></div>`;
+        const groups = document.getElementById("facetGroups");
+        const opts = document.getElementById("facetOpts");
+        groups.innerHTML = FILTER_GROUPS.map((g) => {
+          const on = g.id === state.filterGroup ? " on" : "";
+          const n = f[g.id] ? f[g.id].size : 0;
+          const badge = n ? `<span class="fg-n">${n}</span>` : "";
+          return `<button type="button" class="${on.trim()}" data-g="${g.id}"><span>${g.label}</span>${badge}</button>`;
+        }).join("");
+        opts.innerHTML = FILTER_GROUPS.map((g) =>
+          `<section class="filter-section" id="ffg-${g.id}"><h3>${g.label}</h3><div class="opts-row">${optsHtmlForGroup(g.id, f)}</div></section>`
+        ).join("");
+        groups.querySelectorAll("button").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            state.filterGroup = btn.dataset.g;
+            groups.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.g === state.filterGroup));
+            const optsBox = document.getElementById("facetOpts");
+            const sec = document.getElementById("ffg-" + state.filterGroup);
+            if (sec && optsBox) optsBox.scrollTop = Math.max(0, sec.offsetTop - 8);
+          });
+        });
+        bindFacetOpts(opts, f);
+      } else {
+        const g = FILTER_GROUPS.find((x) => x.id === kind);
+        scroll.innerHTML = `<h3 class="facet-title">${g ? g.label : ""}</h3><div class="opts-row">${optsHtmlForGroup(kind, f)}</div>`;
+        bindFacetOpts(scroll, f);
+      }
+      updateFacetApply();
+    }
+
+    function closeFacet(discard) {
+      if (discard !== false && state.draftFilters) state.draftFilters = null;
+      state.facetOpen = null;
+      state.draftFilters = null;
+      const pop = document.getElementById("facetPop");
+      if (pop) {
+        pop.classList.remove("open");
+        pop.hidden = true;
+      }
+      updateChipStates();
+    }
+
+    function openFacet(kind) {
+      if (state.facetOpen === kind) {
+        closeFacet(true);
+        return;
+      }
+      const cartSheet = document.getElementById("cartSheet");
+      if (cartSheet) {
+        cartSheet.classList.remove("open");
+        cartSheet.setAttribute("aria-hidden", "true");
+      }
+      document.getElementById("overlay").classList.remove("open");
+      state.cartOpen = false;
+      if (!state.draftFilters || state.facetOpen == null) {
+        state.draftFilters = cloneFilters(state.filters);
+      }
+      if (kind !== "sort" && kind !== "filters") state.filterGroup = kind;
+      if (kind === "filters" && !state.filterGroup) state.filterGroup = "species";
+      state.facetOpen = kind;
+      const pop = document.getElementById("facetPop");
+      pop.hidden = false;
+      pop.classList.add("open");
+      renderFacet(kind);
+      placeFacetPop();
+      updateChipStates();
+    }
+
+    function openCompactDrop(group) {
+      openFacet(group);
     }
 
     function updateLayoutMetrics() {
@@ -2949,11 +3303,28 @@
     document.getElementById("chipsRow").addEventListener("click", (e) => {
       const chip = e.target.closest(".chip");
       if (!chip) return;
-      const k = chip.dataset.chip;
-      if (k === "filters") openFilterSheet("species");
-      else if (k === "sort") openSortSheet();
-      else openCompactDrop(k, chip);
+      openFacet(chip.dataset.chip);
     });
+    document.getElementById("facetDim").addEventListener("click", () => closeFacet(true));
+    document.getElementById("facetReset").addEventListener("click", () => {
+      if (!state.draftFilters) state.draftFilters = cloneFilters(state.filters);
+      const kind = state.facetOpen;
+      if (kind === "filters" || !kind) {
+        state.draftFilters = { species: new Set(), country: new Set(), process: new Set(), qgrade: new Set() };
+      } else if (kind !== "sort" && state.draftFilters[kind]) {
+        state.draftFilters[kind] = new Set();
+      }
+      renderFacet(kind);
+    });
+    document.getElementById("facetApply").addEventListener("click", () => {
+      if (state.draftFilters) state.filters = cloneFilters(state.draftFilters);
+      closeFacet(false);
+      renderProducts();
+      updateChipStates();
+    });
+    document.getElementById("phoneScroll").addEventListener("scroll", () => {
+      if (state.facetOpen) placeFacetPop();
+    }, { passive: true });
 
     document.getElementById("closeFilter").addEventListener("click", closeSheets);
     document.getElementById("closeSort").addEventListener("click", closeSheets);
