@@ -93,17 +93,14 @@
       -webkit-overflow-scrolling: touch;
     }
     .sticky-bar {
-      position: sticky;
-      top: 0;
-      z-index: 6;
       background: #fff;
-      box-shadow: 0 1px 0 var(--line);
+      flex: none;
     }
     .catalog-row {
       display: flex;
       align-items: flex-start;
       background: var(--bg);
-      min-height: calc(var(--catalog-scroll-h, 680px) - var(--sticky-offset, 108px));
+      min-height: calc(var(--catalog-scroll-h, 680px) - var(--sticky-offset, 52px));
     }
     .brand {
       display: flex;
@@ -144,7 +141,7 @@
     .transit-banner span:last-child { color: var(--green-d); font-weight: 600; white-space: nowrap; }
 
     .toolbar {
-      padding: 10px 12px 8px;
+      padding: 8px 12px 4px;
       background: #fff;
       flex: none;
     }
@@ -166,9 +163,12 @@
     .view-btns button.on { border-color: var(--green); color: var(--green-d); background: rgba(61,190,74,.08); }
 
     .chips-wrap {
-      position: relative;
+      position: sticky;
+      top: 0;
+      z-index: 6;
       background: #fff;
       border-bottom: 1px solid var(--line);
+      box-shadow: 0 1px 0 var(--line);
       flex: none;
       transition: background .4s ease, box-shadow .4s ease;
     }
@@ -176,10 +176,10 @@
     .chips-wrap.scroll-glow,
     .chips-wrap.is-scrolling {
       background: linear-gradient(180deg, #fff 0%, #f4fbf5 52%, #e8f6ea 100%);
-      box-shadow: inset 0 -1px 0 rgba(61, 190, 74, .16);
+      box-shadow: 0 1px 0 rgba(61, 190, 74, .16), inset 0 -1px 0 rgba(61, 190, 74, .16);
     }
     .chips-row {
-      display: flex; gap: 8px; padding: 10px 36px 14px 12px;
+      display: flex; gap: 6px; padding: 4px 36px 6px 12px;
       overflow-x: auto; overflow-y: hidden; flex: none; background: transparent;
       scrollbar-width: none;
       scroll-behavior: smooth;
@@ -297,11 +297,11 @@
     }
     .chip {
       flex: none; border: 1px solid var(--line); background: #fff;
-      border-radius: 999px; padding: 9px 12px 9px 14px;
+      border-radius: 999px; padding: 6px 10px 6px 12px;
       font: inherit; font-size: 13px; font-weight: 500; color: var(--ink);
       cursor: pointer; white-space: nowrap;
       display: inline-flex; align-items: center; gap: 6px;
-      min-height: 40px;
+      min-height: 34px;
     }
     .chip .chip-icon { flex: none; width: 15px; height: 15px; color: var(--mute); }
     .chip .chip-chevron { flex: none; width: 12px; height: 12px; color: var(--mute); opacity: .88; }
@@ -312,9 +312,9 @@
       width: var(--rail-w);
       flex: none;
       position: sticky;
-      top: var(--sticky-offset, 108px);
+      top: var(--sticky-offset, 52px);
       align-self: flex-start;
-      max-height: calc(var(--catalog-scroll-h, 680px) - var(--sticky-offset, 108px));
+      max-height: calc(var(--catalog-scroll-h, 680px) - var(--sticky-offset, 52px));
       overflow-y: auto;
       border-right: 1px solid var(--line);
       background: #fff;
@@ -717,7 +717,7 @@
     }
 
     .lrow {
-      display: flex; flex-direction: column; gap: 6px; background: #fff; border-radius: 14px; padding: 10px 12px;
+      display: flex; flex-direction: column; gap: 2px; background: #fff; border-radius: 14px; padding: 10px 12px;
       box-shadow: 0 4px 14px rgba(17,19,24,.06);
       width: 100%; max-width: 100%; min-width: 0;
       border: 0; text-align: left; font: inherit; cursor: pointer; color: inherit;
@@ -913,11 +913,11 @@
 
       <h2>4. Sticky: поиск, фильтры и разделы</h2>
       <ul>
-        <li><strong>Что сделали:</strong> при скролле каталога поиск, строка фильтров и вертикальный рубрикатор остаются на экране (sticky).</li>
+        <li><strong>Что сделали:</strong> при скролле каталога строка фильтров остаётся на экране (sticky); поиск уезжает вверх.</li>
         <li><strong>В текущем приложении:</strong> при длинном листинге инструменты уточнения уезжают — приходится возвращаться наверх или бросать самостоятельный отбор.</li>
         <li><strong>Зачем / исследование:</strong> Baymard рекомендует на mobile держать Filter/Sort доступными при скролле. Etsy (pilters): sticky-фильтры после применения дали +5% engagement и +0.6% conversion. DeoDap (CrowAI): sticky Sort &amp; Filter → +40.75% conversion, +24.55% filter interactions.</li>
         <li><strong>Ожидаемый эффект для self-serve:</strong> можно уточнять заказ mid-scroll, не теряя контекст — выше шанс довести оформление самому.</li>
-        <li><strong>Проверка:</strong> проскроллить далеко вниз — чипы и левое меню на месте, док внизу.</li>
+        <li><strong>Проверка:</strong> проскроллить далеко вниз — чипы фильтров наверху, поиск уже уехал; док внизу.</li>
       </ul>
 
       <h2>5. Намёк на фильтры при первом скролле</h2>
@@ -980,27 +980,27 @@
               </div>
             </div>
           </div>
-          <div class="chips-wrap" id="chipsWrap">
-            <div class="chips-fade left" aria-hidden="true"></div>
-            <button type="button" class="chips-back" id="chipsBack" aria-label="Листать фильтры влево" title="Назад">
-              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M8 2.5L4.5 6 8 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <div class="chips-row" id="chipsRow" tabindex="0" aria-label="Быстрые фильтры, можно листать вбок">
-              <button type="button" class="chip" data-chip="filters"><svg class="chip-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 3.5h11L9 10v3.5l-2 1V10L2.5 3.5z" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/></svg>Фильтры<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-              <button type="button" class="chip" data-chip="sort"><svg class="chip-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v11M5.5 5.5L8 3l2.5 2.5M5.5 10.5L8 13l2.5-2.5" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg>Сортировка<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-              <button type="button" class="chip" data-chip="species">Сорт<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-              <button type="button" class="chip" data-chip="country">Страна<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-              <button type="button" class="chip" data-chip="process">Обработка<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-              <button type="button" class="chip" data-chip="qgrade">Q Grade<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-            </div>
-            <div class="chips-motion" id="chipsMotion" aria-hidden="true">
-              <div class="chips-motion-thumb" id="chipsMotionThumb"></div>
-            </div>
-            <div class="chips-fade right" aria-hidden="true"></div>
-            <button type="button" class="chips-more" id="chipsMore" aria-label="Ещё фильтры — листать вправо" title="Ещё фильтры">
-              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2.5L7.5 6 4 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
+        </div>
+        <div class="chips-wrap" id="chipsWrap">
+          <div class="chips-fade left" aria-hidden="true"></div>
+          <button type="button" class="chips-back" id="chipsBack" aria-label="Листать фильтры влево" title="Назад">
+            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M8 2.5L4.5 6 8 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="chips-row" id="chipsRow" tabindex="0" aria-label="Быстрые фильтры, можно листать вбок">
+            <button type="button" class="chip" data-chip="filters"><svg class="chip-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 3.5h11L9 10v3.5l-2 1V10L2.5 3.5z" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/></svg>Фильтры<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button type="button" class="chip" data-chip="sort"><svg class="chip-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v11M5.5 5.5L8 3l2.5 2.5M5.5 10.5L8 13l2.5-2.5" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg>Сортировка<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button type="button" class="chip" data-chip="species">Сорт<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button type="button" class="chip" data-chip="country">Страна<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button type="button" class="chip" data-chip="process">Обработка<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button type="button" class="chip" data-chip="qgrade">Q Grade<svg class="chip-chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
+          <div class="chips-motion" id="chipsMotion" aria-hidden="true">
+            <div class="chips-motion-thumb" id="chipsMotionThumb"></div>
+          </div>
+          <div class="chips-fade right" aria-hidden="true"></div>
+          <button type="button" class="chips-more" id="chipsMore" aria-label="Ещё фильтры — листать вправо" title="Ещё фильтры">
+            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2.5L7.5 6 4 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
         </div>
         <div class="catalog-row" id="catalogRow">
           <nav class="sidebar" id="sidebar" aria-label="Сегменты прайса"></nav>
@@ -2519,13 +2519,33 @@
       });
     }
 
+    function scrollCatalogToTop() {
+      const phoneScroll = document.getElementById("phoneScroll");
+      const chipsWrap = document.getElementById("chipsWrap");
+      if (!phoneScroll || !chipsWrap) return;
+      const y =
+        chipsWrap.getBoundingClientRect().top -
+        phoneScroll.getBoundingClientRect().top +
+        phoneScroll.scrollTop;
+      phoneScroll.scrollTo({ top: Math.max(0, Math.round(y)), behavior: "auto" });
+    }
+
     function setTab(tabId) {
       state.tab = tabId;
       renderSidebar();
       renderProducts();
       updateChipStates();
-      const active = document.querySelector(`.tab-item[data-tab="${tabId}"]`);
-      if (active) active.scrollIntoView({ block: "nearest" });
+      scrollCatalogToTop();
+      requestAnimationFrame(() => {
+        updateLayoutMetrics();
+        scrollCatalogToTop();
+        const active = document.querySelector(`.tab-item[data-tab="${tabId}"]`);
+        const side = document.getElementById("sidebar");
+        if (active && side) {
+          const top = active.offsetTop - side.clientHeight / 2 + active.offsetHeight / 2;
+          side.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+        }
+      });
     }
 
     function cloneFilters(f) {
@@ -2798,12 +2818,12 @@
 
     function updateLayoutMetrics() {
       const phone = document.getElementById("phone");
-      const stickyBar = document.getElementById("stickyBar");
+      const chipsWrap = document.getElementById("chipsWrap");
       const catalogRow = document.getElementById("catalogRow");
       const phoneScroll = document.getElementById("phoneScroll");
       const dock = phone ? phone.querySelector(".dock") : null;
-      if (!phone || !stickyBar || !catalogRow) return;
-      const barH = stickyBar.offsetHeight;
+      if (!phone || !chipsWrap || !catalogRow) return;
+      const barH = chipsWrap.offsetHeight;
       const scrollH = (phoneScroll ? phoneScroll.clientHeight : phone.clientHeight - (dock ? dock.offsetHeight : 0));
       catalogRow.style.setProperty("--sticky-offset", barH + "px");
       catalogRow.style.setProperty("--catalog-scroll-h", scrollH + "px");
@@ -2882,11 +2902,11 @@
 
     function watchChipsStickyHint() {
       const phoneScroll = document.getElementById("phoneScroll");
-      const stickyBar = document.getElementById("stickyBar");
-      if (!phoneScroll || !stickyBar) return;
+      const chipsWrap = document.getElementById("chipsWrap");
+      if (!phoneScroll || !chipsWrap) return;
       phoneScroll.addEventListener("scroll", pulseChipsScrollGlow, { passive: true });
       const onStuck = () => {
-        const stuck = stickyBar.getBoundingClientRect().top <= phoneScroll.getBoundingClientRect().top + 1;
+        const stuck = chipsWrap.getBoundingClientRect().top <= phoneScroll.getBoundingClientRect().top + 1;
         if (stuck) {
           playChipsHint();
           phoneScroll.removeEventListener("scroll", onStuck);
