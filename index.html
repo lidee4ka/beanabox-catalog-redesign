@@ -2523,11 +2523,13 @@
       const phoneScroll = document.getElementById("phoneScroll");
       const chipsWrap = document.getElementById("chipsWrap");
       if (!phoneScroll || !chipsWrap) return;
-      const y =
-        chipsWrap.getBoundingClientRect().top -
-        phoneScroll.getBoundingClientRect().top +
-        phoneScroll.scrollTop;
-      phoneScroll.scrollTo({ top: Math.max(0, Math.round(y)), behavior: "auto" });
+      /* Не getBoundingClientRect: у sticky он даёт «залипшую» позицию и скролл не сбрасывается */
+      let y = 0;
+      for (const child of phoneScroll.children) {
+        if (child === chipsWrap) break;
+        y += child.offsetHeight;
+      }
+      phoneScroll.scrollTop = y;
     }
 
     function setTab(tabId) {
@@ -2545,6 +2547,7 @@
           const top = active.offsetTop - side.clientHeight / 2 + active.offsetHeight / 2;
           side.scrollTo({ top: Math.max(0, top), behavior: "auto" });
         }
+        requestAnimationFrame(scrollCatalogToTop);
       });
     }
 
