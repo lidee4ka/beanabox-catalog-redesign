@@ -57,36 +57,204 @@
       color: var(--ink);
       border-radius: 20px;
       box-shadow: 0 10px 28px rgba(17,19,24,.06);
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+      font-variant-numeric: lining-nums proportional-nums;
+      hyphens: auto;
+      -webkit-hyphens: auto;
     }
-    .deck h1 { font-size: 22px; font-weight: 600; margin: 0 0 10px; color: var(--ink); line-height: 1.25; }
+    .deck p,
+    .deck li {
+      text-wrap: pretty;
+    }
+    .deck h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; color: var(--ink); line-height: 1.25; }
+    .deck .deck-sub {
+      margin: 0 0 18px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.45;
+      max-width: 52em;
+    }
+    .deck .deck-sub .task-label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-right: 8px;
+      vertical-align: 1px;
+    }
     .deck h2 { font-size: 16px; font-weight: 600; margin: 0 0 8px; color: var(--ink); }
-    .deck .lead { color: #3d4654; margin: 0 0 18px; font-size: 15px; }
-    .deck .cmp { margin: 0 0 16px; }
+    .deck strong { font-weight: 600; color: var(--ink); }
+    .deck .impact {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #9aa3af;
+      margin-left: 8px;
+      letter-spacing: .02em;
+    }
+    .deck .lead { color: #3d4654; margin: 0 0 18px; font-size: 15px; font-weight: 500; }
+    .deck .intro {
+      margin: 0 0 22px;
+      display: grid;
+      gap: 10px;
+    }
+    .deck .intro-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .deck .intro-card {
+      border: 1px solid #e4e9ef;
+      border-radius: 14px;
+      padding: 12px 14px;
+      min-width: 0;
+      background: #fff;
+    }
+    .deck .intro-card.full { grid-column: 1 / -1; }
+    .deck .intro-card .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .deck .intro-card.jtbd .tag { color: var(--blue); }
+    .deck .intro-card.pain-b .tag { color: #b42318; }
+    .deck .intro-card.pain-m .tag { color: #9a3412; }
+    .deck .intro-card.hypo .tag { color: var(--green-d); }
+    .deck .intro-card.metric .tag { color: var(--ink); }
+    .deck .intro-card p {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+    .deck .intro-card .metric-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px 14px;
+      margin-top: 4px;
+    }
+    .deck .intro-card .metric-num {
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.1;
+    }
+    .deck .intro-card .metric-num.from { color: #b42318; }
+    .deck .intro-card .metric-num.to { color: var(--green-d); }
+    .deck .intro-card .metric-arrow {
+      font-size: 16px;
+      font-weight: 600;
+      color: #9ca3af;
+    }
+    .deck .intro-card .metric-cap {
+      font-size: 12px;
+      font-weight: 500;
+      color: #5b6573;
+      width: 100%;
+      margin-top: 2px;
+    }
+    .deck .seg-title {
+      margin: 4px 0 14px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .deck .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #5b6573;
+      margin: 2px 0 0;
+    }
+    .deck .legend span::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .deck .legend .l-now::before { background: #b42318; }
+    .deck .legend .l-proto::before { background: var(--blue); }
+    .deck .legend .l-next::before { background: var(--green-d); }
+    @container (max-width: 720px) {
+      .deck .intro-row { grid-template-columns: 1fr; }
+    }
+    .deck .cmp { margin: 0 0 18px; padding-bottom: 16px; border-bottom: 1px solid #e8ecf1; }
+    .deck .cmp:last-of-type { border-bottom: 0; }
     .deck .cmp-grid {
       display: grid;
       grid-template-columns: 1fr 1.25fr 1fr;
-      gap: 8px;
-      align-items: stretch;
+      gap: 14px 18px;
+      align-items: start;
     }
     .deck .cell {
-      border-radius: 12px;
-      padding: 12px 12px 14px;
+      padding: 0;
       min-width: 0;
+      background: transparent;
     }
-    .deck .cell p { margin: 0; font-size: 14px; line-height: 1.45; color: #1c2430; }
+    .deck .cell p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--ink);
+      font-weight: 500;
+    }
     .deck .cell .k {
       display: block;
       font-size: 12px;
       font-weight: 600;
       margin-bottom: 6px;
+      letter-spacing: .02em;
     }
-    .deck .cell.now { background: #fdecec; }
     .deck .cell.now .k { color: #b42318; }
-    .deck .cell.proto { background: #e8eefc; }
     .deck .cell.proto .k { color: var(--blue); }
-    .deck .cell.next { background: #e7f6ea; }
     .deck .cell.next .k { color: var(--green-d); }
-    .deck .cmp-note { margin: 8px 0 0; color: #3d4654; font-size: 14px; }
+    .deck .cmp-note { margin: 8px 0 0; color: #3d4654; font-size: 14px; font-weight: 500; }
+    .deck .next-steps {
+      margin: 4px 0 0;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #f4f6f8;
+      border: 1px solid #e4e9ef;
+    }
+    .deck .next-steps h2 { margin: 0 0 8px; }
+    .deck .next-steps ol {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--ink);
+      font-weight: 500;
+    }
+    .deck .next-steps li { margin: 0 0 6px; }
+    .deck .next-steps li:last-child { margin-bottom: 0; }
+    .deck .next-steps .opts {
+      margin: 8px 0 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fff;
+      border: 1px solid #e4e9ef;
+      list-style: none;
+    }
+    .deck .next-steps .opts li {
+      margin: 0 0 8px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #3d4654;
+    }
+    .deck .next-steps .opts li:last-child { margin-bottom: 0; }
+    .deck .next-steps .opts b { color: var(--ink); font-weight: 600; }
+    .deck .next-steps .opts .price { color: var(--green-d); font-weight: 600; white-space: nowrap; }
     .deck .pill-note {
       display: inline-block;
       background: rgba(61, 190, 74, 0.14);
@@ -95,7 +263,14 @@
       font-size: 12px;
       padding: 4px 10px;
       border-radius: 999px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+    }
+    .deck .meta-line {
+      margin: 0 0 14px;
+      font-size: 12px;
+      font-weight: 400;
+      color: #9aa3af;
+      letter-spacing: .01em;
     }
     .stage {
       flex: none;
@@ -1101,72 +1276,115 @@
 <body>
   <div class="wrap">
     <aside class="deck">
-      <span class="pill-note">Прототип · отличие от текущего приложения</span>
-      <h1>Чем прототип отличается от текущего приложения</h1>
-      <p class="lead">Цель — чтобы Закупщик сам находил лот и собирал заказ. Ниже по каждому изменению три колонки: что мешает сейчас, что сделано в прототипе и какой результат ждём. В мини-приложении аналитика ещё не настроена, поэтому это ожидание, а не замер воронки.</p>
+      <span class="pill-note">Прототип каталога BEANABOX</span>
+      <p class="meta-line">26.09.2026 · Мялкина Лидия · Product</p>
+      <h1>Каталог для самостоятельного закупа</h1>
+      <p class="deck-sub"><span class="task-label">Задача</span>Сделать прайс читаемым как&nbsp;каталог с&nbsp;полками: чтобы Закупщик сам находил зерно под своё поле и&nbsp;фиксировал типовую сделку в&nbsp;каталоге, а&nbsp;менеджер уходил от&nbsp;роли оператора на&nbsp;сложные заказы</p>
+
+      <div class="intro">
+        <div class="intro-row">
+          <div class="intro-card jtbd full">
+            <span class="tag">JTBD · работа Закупщика</span>
+            <p><strong>Когда</strong> нужно закрыть закуп зелёного кофе под своё поле и&nbsp;бизнес-модель,<br>
+            <strong>хочу</strong> быстро найти зерно с&nbsp;лучшей для меня выгодой и&nbsp;сразу зафиксировать сделку,<br>
+            <strong>чтобы</strong> получить прибыль и&nbsp;не&nbsp;упустить лот</p>
+          </div>
+          <div class="intro-card pain-b">
+            <span class="tag">Боль Закупщика</span>
+            <p>В&nbsp;каталоге нет возможности самому быстро найти зерно под свой профиль закупа и&nbsp;зафиксировать выгодную сделку: нет карты прайса и&nbsp;понятных фильтров. Блокер&nbsp;— типовой заказ без менеджера не&nbsp;закрывается; остаётся только личная переписка или созвон, где сейчас и&nbsp;скорость счёта, и&nbsp;цена</p>
+          </div>
+          <div class="intro-card pain-m">
+            <span class="tag">Боль менеджера</span>
+            <p>Нет возможности масштабироваться на&nbsp;сложные и&nbsp;крупные заказы: день уходит на&nbsp;телефон, набор лотов в&nbsp;корзину и&nbsp;пересылку счетов. Блокер&nbsp;— роль оператора типового подбора вместо развития нестандартных сделок</p>
+          </div>
+          <div class="intro-card hypo">
+            <span class="tag">Гипотеза</span>
+            <p>Если вывести рубрики прайса и&nbsp;дать понятные фильтры&nbsp;— Закупщик быстрее найдёт зерно под свою задачу и&nbsp;зафиксирует сделку сам. Каталог даст скорость сделки и&nbsp;ясность выгоды без обязательной личной переписки или созвона; менеджер останется на&nbsp;сложных и&nbsp;оптовых кейсах</p>
+          </div>
+          <div class="intro-card metric">
+            <span class="tag">Метрика успеха</span>
+            <div class="metric-line">
+              <span class="metric-num to">30–40%</span>
+              <span class="metric-cap">заказов, которые Закупщик собрал сам · сейчас 10–20% (1–2 из&nbsp;10)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="seg-title">Список решений</h2>
 
       <section class="cmp">
-        <h2>1. Разделы одной лентой</h2>
+        <h2>1. Рубрики прайса слева <span class="impact">макс. импакт</span></h2>
         <div class="cmp-grid">
-          <div class="cell now"><span class="k">Сейчас</span><p>Сегменты прайса не стоят постоянным меню, закупщик не видит, в какой зоне каталога он находится.</p></div>
-          <div class="cell proto"><span class="k">В прототипе</span><p>Слева рубрикатор: В пути, Акционные, 90+, High Tone, Экзотика, FineComm, Best Value, Decaf, Оборудование. Вкладки «Все» нет. Разделы идут одной лентой, при скролле подсвечивается текущий, тап ведёт к заголовку. Старт — «В пути».</p></div>
-          <div class="cell next"><span class="k">Ожидаем</span><p>Закупщик сам выбирает сегмент и реже спрашивает менеджера, куда смотреть.</p></div>
+          <div class="cell now"><span class="k">Боль</span><p>Прайса как карты нет: Закупщик не&nbsp;понимает, с&nbsp;какой полки начать, и&nbsp;сдаётся&nbsp;— «выпишите мне счёт»</p></div>
+          <div class="cell proto"><span class="k">Решение</span><p>Слева все сегменты сразу&nbsp;— как полки в&nbsp;привычном каталоге. Список лотов тот&nbsp;же, но&nbsp;скролл подсвечивает текущую рубрику, тап прыгает к&nbsp;ней. Старт с&nbsp;«В&nbsp;пути»&nbsp;— гипотеза: там самая свежая выгода</p></div>
+          <div class="cell next"><span class="k">Результат</span><p>Закупщик сам выбирает полку под своё поле и&nbsp;не&nbsp;просит менеджера найти и&nbsp;оформить лот за&nbsp;него</p></div>
         </div>
       </section>
 
       <section class="cmp">
-        <h2>2. Пояснение у раздела</h2>
+        <h2>2. Фильтры в строке чипов <span class="impact">высокий</span></h2>
         <div class="cmp-grid">
-          <div class="cell now"><span class="k">Сейчас</span><p>У раздела только название, коммерческий смысл не расшифрован.</p></div>
-          <div class="cell proto"><span class="k">В прототипе</span><p>Под заголовком короткая подпись: какие лоты здесь и зачем они закупщику.</p></div>
-          <div class="cell next"><span class="k">Ожидаем</span><p>Меньше заходов не в тот сегмент и меньше просьб объяснить прайс.</p></div>
+          <div class="cell now"><span class="k">Боль</span><p>Кто ищет по стране и&nbsp;Q&nbsp;— упирается в&nbsp;спрятанные фильтры и&nbsp;уходит в&nbsp;личную переписку или созвон с&nbsp;менеджером. Кто ищет «полками»&nbsp;— тоже не&nbsp;в&nbsp;своей модели</p></div>
+          <div class="cell proto"><span class="k">Решение</span><p>Чипы сверху&nbsp;— рядом с&nbsp;рубриками слева. Кто ищет «полками»&nbsp;— идёт по рубрикатору; кто сужает по стране и&nbsp;Q&nbsp;— по чипам. На&nbsp;чипе фильтра видно, что уже сужает список; при первом заходе строка коротко «кивает»</p></div>
+          <div class="cell next"><span class="k">Результат</span><p>Закупщик доходит до лота под свою задачу без менеджера; типовые «подберите мне» реже доходят до менеджера</p></div>
         </div>
       </section>
 
       <section class="cmp">
-        <h2>3. Акции отдельным разделом</h2>
+        <h2>3. Инструменты не исчезают при скролле <span class="impact">средний</span></h2>
         <div class="cmp-grid">
-          <div class="cell now"><span class="k">Сейчас</span><p>Акционные лоты не собраны в понятный сценарий закупа.</p></div>
-          <div class="cell proto"><span class="k">В прототипе</span><p>Раздел «Акционные» — три сценария: малый чек, розница, контейнер. Бейдж акции остаётся и на карточке в «В пути». Сценарии видны сразу, без отдельного фильтра.</p></div>
-          <div class="cell next"><span class="k">Ожидаем</span><p>Часть заказов собирается с готового предложения, без подбора с менеджером.</p></div>
+          <div class="cell now"><span class="k">Боль</span><p>На&nbsp;середине прайса фильтры уже уехали&nbsp;— отбор обрывается</p></div>
+          <div class="cell proto"><span class="k">Решение</span><p>Чипы и&nbsp;рубрикатор остаются с&nbsp;Закупщиком. Поиск и&nbsp;вид списка прячутся при движении вниз и&nbsp;возвращаются при подъёме. Логотип и&nbsp;PDF не&nbsp;конкурируют с&nbsp;лотами при скролле</p></div>
+          <div class="cell next"><span class="k">Результат</span><p>Сделка дожимается в&nbsp;каталоге, а&nbsp;не&nbsp;«потом спрошу менеджера»</p></div>
         </div>
       </section>
 
       <section class="cmp">
-        <h2>4. Фильтры панелью</h2>
+        <h2>4. Карточка и плотный список <span class="impact">средний</span></h2>
         <div class="cmp-grid">
-          <div class="cell now"><span class="k">Сейчас</span><p>Уточнения спрятаны глубже, до них часто не доходят и уходят в чат.</p></div>
-          <div class="cell proto"><span class="k">В прототипе</span><p>Чипы сверху: Фильтры, Сортировка, Сорт, Страна, Обработка, Q Grade. Панель открывается под чипами и затемняет каталог. Синим отмечено, что открыто и что уже выбрано. Сортировка применяется сразу, остальные фильтры — по кнопке «Показать».</p></div>
-          <div class="cell next"><span class="k">Ожидаем</span><p>Закупщик сам сужает прайс по стране, обработке и Q и доходит до лота.</p></div>
+          <div class="cell now"><span class="k">Боль</span><p>Шаг «в&nbsp;заказ» неочевиден, а&nbsp;фото в&nbsp;списке крадёт место у&nbsp;цены и&nbsp;Q&nbsp;— сравнивать лоты неудобно</p></div>
+          <div class="cell proto"><span class="k">Решение</span><p>Корзина на&nbsp;карточке, количество кратно мешку. В&nbsp;списке&nbsp;— название, Q, обработка, цена: больше строк в&nbsp;одном экране, быстрее «это моё»</p></div>
+          <div class="cell next"><span class="k">Результат</span><p>От «нашёл» до «в&nbsp;счёте» меньше трения&nbsp;— выгода фиксируется, пока лот ещё выгодный</p></div>
         </div>
       </section>
 
       <section class="cmp">
-        <h2>5. Что остаётся на экране при скролле</h2>
+        <h2>5. Подпись под рубрикой <span class="impact">мин. импакт</span></h2>
         <div class="cmp-grid">
-          <div class="cell now"><span class="k">Сейчас</span><p>На длинном прайсе поиск и фильтры уезжают, отбор обрывается.</p></div>
-          <div class="cell proto"><span class="k">В прототипе</span><p>Фильтры и левое меню остаются. При скролле вниз поиск и переключатель вида уезжают, при скролле вверх возвращаются. Логотип и баннер PDF остаются только вверху страницы.</p></div>
-          <div class="cell next"><span class="k">Ожидаем</span><p>Отбор продолжается по ходу прайса, шапка не съедает карточки.</p></div>
-        </div>
-      </section>
-
-      <section class="cmp">
-        <h2>6. Карточка и список</h2>
-        <div class="cmp-grid">
-          <div class="cell now"><span class="k">Сейчас</span><p>Шаг «в заказ» читается слабее, а фото в списке занимает место, нужное для сравнения цен.</p></div>
-          <div class="cell proto"><span class="k">В прототипе</span><p>На карточке иконка корзины, количество кратно мешку. В виде «Список» нет превью: в кадре название, Q, обработка и цена.</p></div>
-          <div class="cell next"><span class="k">Ожидаем</span><p>Быстрее сравнить позиции и положить мешки в заказ без менеджера.</p></div>
+          <div class="cell now"><span class="k">Боль</span><p>«90+» и&nbsp;«FineComm» для новичка&nbsp;— шифр. Ошибка полки&nbsp;— потерянное время или снова менеджер</p></div>
+          <div class="cell proto"><span class="k">Решение</span><p>Одна строка под заголовком рубрики: что здесь лежит и&nbsp;кому это зерно</p></div>
+          <div class="cell next"><span class="k">Результат</span><p>Меньше промахов мимо сегмента; подстраховка к&nbsp;рубрикатору, не&nbsp;замена ему</p></div>
         </div>
       </section>
 
       <section class="cmp">
         <h2>Как поймём, что сработало</h2>
         <div class="cmp-grid">
-          <div class="cell now"><span class="k">Сейчас</span><p>1–2 самостоятельных заказа из 10. Остальные ведут менеджеры.</p></div>
-          <div class="cell proto"><span class="k">В прототипе</span><p>Пока считаем по факту оформления: заказ собрал Закупщик или менеджер.</p></div>
-          <div class="cell next"><span class="k">Ожидаем</span><p>Доля самостоятельных заказов заметно выше текущих 1–2 из 10.</p></div>
+          <div class="cell now"><span class="k">Боль</span><p>Самостоятельных заказов 10–20%. Остальное&nbsp;— счёт от&nbsp;менеджера</p></div>
+          <div class="cell proto"><span class="k">Решение</span><p>Пока нет воронки в&nbsp;мини-приложении&nbsp;— считаем по факту: кто собрал заказ, Закупщик или менеджер</p></div>
+          <div class="cell next"><span class="k">Результат</span><p>Дальше&nbsp;— воронка каталог&nbsp;→ фильтр&nbsp;→ корзина&nbsp;→ счёт и&nbsp;утечка в&nbsp;личную переписку или созвон на&nbsp;каждом шаге</p></div>
         </div>
-        <p class="cmp-note">Когда в мини-приложении появится аналитика, добавим шаги: раздел → фильтр → корзина → заказ и долю уходов в чат на этапе подбора.</p>
+      </section>
+
+      <section class="next-steps">
+        <h2>Что дальше</h2>
+        <ol>
+          <li>Провести Discovery на прототипе с&nbsp;5–7 Закупщиками: находят ли лот и&nbsp;готовы ли оформить счёт сами без личной переписки или созвона с&nbsp;менеджером</li>
+          <li>По итогам правок&nbsp;— выкатываем в&nbsp;каталог. Критерий выхода: 5&nbsp;из&nbsp;7 участников собирают типовой заказ без обращения к&nbsp;менеджеру</li>
+          <li>Считаем две недели пилота: доля «Закупщик&nbsp;/&nbsp;менеджер» против цели 30–40%</li>
+        </ol>
+      </section>
+
+      <section class="next-steps">
+        <h2>Отдельно: воронка в мини-приложении</h2>
+        <p class="cmp-note" style="margin:0 0 10px">Яндекс Метрика у&nbsp;нас уже стоит, но&nbsp;не&nbsp;настроена: Вебвизор не&nbsp;работает&nbsp;— мини-приложение на&nbsp;втором уровне домена сайта. Нужен product-стек под воронку: каталог&nbsp;→ рубрика&nbsp;/&nbsp;фильтр&nbsp;→ корзина&nbsp;→ счёт и&nbsp;событие «ушёл к&nbsp;менеджеру» (поддержка&nbsp;/&nbsp;чат&nbsp;/&nbsp;звонок)</p>
+        <ul class="opts">
+          <li><b>PostHog</b>&nbsp;— воронки, пути, session replay в&nbsp;одном SDK для WebView. <span class="price">бесплатный tier до&nbsp;~1&nbsp;млн событий/мес</span>, дальше usage-based · тарифы на&nbsp;09.2026</li>
+          <li><b>Amplitude</b>&nbsp;— классические product-воронки и&nbsp;когорты. <span class="price">free до&nbsp;~2&nbsp;млн событий/мес</span>, дальше usage-based · тарифы на&nbsp;09.2026</li>
+          <li>Также смотрели: Mixpanel&nbsp;— если критичен retention; Calltouch&nbsp;/&nbsp;CoMagic&nbsp;/&nbsp;Mango&nbsp;— если звонки важны как канал оттока (~3–8&nbsp;тыс.&nbsp;₽/мес, на&nbsp;09.2026)</li>
+        </ul>
+        <p class="cmp-note" style="margin:10px 0 0">На&nbsp;старте достаточно PostHog или Amplitude + кастомные события</p>
       </section>
     </aside>
 
@@ -3677,7 +3895,36 @@
     document.getElementById("filterOptions").addEventListener("scroll", syncFilterGroupFromScroll, { passive: true });
     window.addEventListener("resize", updateLayoutMetrics);
 
+    function typographDeck() {
+      const root = document.querySelector(".deck");
+      if (!root) return;
+      const short = "а|в|во|и|к|ко|о|об|от|по|со|у|с|на|из|за|до|не|но|ни|то|же|ли|бы|под|над|при|про|для|без|или|как|что|это|их|мы|вы|он|я|же";
+      const reShort = new RegExp("(^|[\\s(«„\"])(" + short + ") (?=[\\wа-яёА-ЯЁ«\"(0-9])", "gi");
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach((node) => {
+        const p = node.parentElement;
+        if (!p || /SCRIPT|STYLE|TEXTAREA|INPUT/.test(p.tagName)) return;
+        if (p.closest(".task-label, .tag, .k, .pill-note, .impact, .price, .metric-num")) return;
+        let t = node.nodeValue;
+        if (!t || !/\S/.test(t)) return;
+        t = t.replace(/\u00A0/g, " ");
+        t = t.replace(/\s+—\s+/g, "\u00A0— ");
+        t = t.replace(/(\S) - (\S)/g, "$1\u00A0— $2");
+        t = t.replace(/\s+–\s+/g, "\u00A0– ");
+        t = t.replace(reShort, (_, a, b) => a + b + "\u00A0");
+        t = t.replace(/(\d)\s*%/g, "$1\u202F%");
+        t = t.replace(/(\d)\s+(из|до|тыс\.?|млн|руб)/gi, "$1\u00A0$2");
+        t = t.replace(/\s+\/\s+/g, "\u00A0/\u00A0");
+        t = t.replace(/(\d)\s*–\s*(\d)/g, "$1–$2");
+        t = t.replace(/([а-яё])\s+\(/gi, "$1\u00A0(");
+        node.nodeValue = t;
+      });
+    }
+
     (async function init() {
+      typographDeck();
       await loadOffers();
       renderSidebar();
       renderProducts();
